@@ -76,44 +76,75 @@
                 glowOpacity: 0.2
             },
             {
-                name: '模板 2',
+                name: '帕斯蒂尔水彩',
                 mode: 'gradient',
-                gradientColors: ['#ff0000', '#00ff00'],
-                width: 5,
-                opacity: 0.8,
-                fadeTime: 1000,
-                gradientLength: 100,
-                gradientTransition: 0.5
+                gradientColors: [
+                    '#FFE4E6', '#FFD9B3', '#FFF8D6', '#E1F5D0', '#D4F1F9', '#E8E4F1', 
+                    '#F9E4D0', '#D0E8E1', '#F4D9EB', '#E4F4D0', '#D9E4F9', '#F4E4D9',
+                    '#E0F7FA', '#F3E5F5', '#FFF3E0', '#E8F5E8', '#E3F2FD', '#FFF8E1'
+                ], // 18种颜色，包含马卡龙和莫兰迪色系
+                width: 4,
+                opacity: 0.85,
+                fadeTime: 2000,
+                gradientLength: 300, // 更长的渐变长度，实现水彩晕染效果
+                gradientTransition: 0.95, // 更平滑的过渡
+                glow: true,
+                glowBlur: 1.5,
+                glowOpacity: 0.3
             },
             {
-                name: '模板 3',
+                name: '棉花糖',
                 mode: 'gradient',
-                gradientColors: ['#0000ff', '#ffff00'],
-                width: 5,
-                opacity: 0.8,
-                fadeTime: 1000,
-                gradientLength: 100,
-                gradientTransition: 0.5
+                gradientColors: [
+                    '#FFE8F0', '#FFF0E8', '#FFF8E8', '#F0FFF8', '#E8F8FF', '#E8F0FF', '#F0E8FF', '#FFE8F8' // 粉、蓝、黄为主的低饱和度高亮度颜色
+                ], // 8种颜色，营造棉花糖的蓬松感
+                width: 6, // 更粗的线条，增强蓬松感
+                opacity: 0.95, // 更高的透明度，增强轻盈感
+                fadeTime: 1800,
+                gradientLength: 200, // 合适的渐变长度
+                gradientTransition: 0.9, // 平滑过渡
+                glow: true,
+                glowBlur: 3, // 更强的发光效果，增强蓬松感
+                glowOpacity: 0.4 // 更高的发光透明度
             },
             {
-                name: '模板 4',
+                name: '日落',
                 mode: 'gradient',
-                gradientColors: ['#ff00ff', '#00ffff'],
-                width: 5,
-                opacity: 0.8,
-                fadeTime: 1000,
-                gradientLength: 100,
-                gradientTransition: 0.5
+                gradientColors: [
+                    '#FFE0B2', '#FFCCBC', '#FFAB91', '#FFD1DC', '#F8BBD0', '#E1BEE7', '#D1C4E9' // 浅橙、浅粉、浅紫为主，饱和度稍高
+                ], // 7种颜色，模拟日落时的柔和淡彩
+                width: 4, // 指定的线条宽度
+                opacity: 0.9, // 暖调通透感
+                fadeTime: 1800,
+                gradientLength: 250, // 合适的渐变长度
+                gradientTransition: 0.9, // 平滑过渡
+                glow: false // 不添加特殊效果
             },
             {
-                name: '模板 5',
+                name: '糖果派对',
                 mode: 'gradient',
-                gradientColors: ['#00ff00', '#0000ff'],
-                width: 5,
-                opacity: 0.8,
-                fadeTime: 1000,
-                gradientLength: 100,
-                gradientTransition: 0.5
+                gradientColors: ['#FF3E5E', '#7B66FF', '#FFE619', '#33FFD8'], // 草莓红 + 蓝莓紫 + 柠檬黄 + 薄荷绿
+                width: 4,
+                opacity: 0.9,
+                fadeTime: 1500,
+                gradientLength: 500,
+                gradientTransition: 0.8,
+                glow: true,
+                glowBlur: 2,
+                glowOpacity: 0.3
+            },
+            {
+                name: '赛博霓虹',
+                mode: 'gradient',
+                gradientColors: ['#FF2D95', '#00F0FF', '#B300FF', '#FF7700'], // 霓虹粉 + 电蓝 + 荧光紫 + 荧光橙
+                width: 4,
+                opacity: 0.9,
+                fadeTime: 1500,
+                gradientLength: 500,
+                gradientTransition: 0.8,
+                glow: true,
+                glowBlur: 3,
+                glowOpacity: 0.5
             }
         ];
 
@@ -129,7 +160,10 @@
             gradientColors: ['#ff0000', '#00ff00'], // 渐变模式颜色
             preset: 0, // 预设模式模板索引
             gradientLength: 100, // 渐变长度
-            gradientTransition: 0.5 // 渐变过渡程度（0-1）
+            gradientTransition: 0.5, // 渐变过渡程度（0-1）
+            shortcutEnabled: true, // 快捷键开关
+            screenshotEnabled: true, // 截图显示开关
+            visible: true // 当前轨迹是否可见（用于快捷键和截图）
         };
 
         // 轨迹点数组
@@ -157,12 +191,136 @@
             }
         });
 
+        // 监听快捷键事件 - 现在由主进程处理，这里只需要响应配置更新
+        ipcRenderer.on('toggle-trail-shortcut', () => {
+            console.log('Trail window received toggle-trail-shortcut event');
+            // 主进程会直接销毁和重建窗口，这里不需要处理
+        });
+        
+        // 实现截图检测和处理 - 只清空画布，不动透明层
+        let isScreenshotActive = false;
+        
+        // 快速清空画布功能
+        function fastClearCanvas() {
+            if (!config.screenshotEnabled) {
+                console.log('Fast clearing canvas due to screenshot detection');
+                // 清空画布，不影响透明层窗口
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // 清空轨迹点数组
+                trailPoints = [];
+            }
+        }
+        
+        // 检测截图操作
+        function detectScreenshot() {
+            // 监听常见截图快捷键
+            const screenshotKeyPatterns = [
+                // 系统截图快捷键
+                { key: 'PrintScreen' },
+                { key: 'PrtScr' },
+                { key: 'F11' },
+                
+                // 微信/QQ截图
+                { key: 'A', ctrlKey: true, shiftKey: true },
+                
+                // Snipaste
+                { key: 'P', ctrlKey: true, altKey: true },
+                
+                // Windows 10+ 截图工具
+                { key: 'S', winKey: true, shiftKey: true },
+                
+                // macOS截图
+                { key: '3', metaKey: true },
+                { key: '4', metaKey: true },
+                { key: '5', metaKey: true },
+                
+                // 其他常见组合
+                { key: 'Insert', ctrlKey: true },
+                { key: 'S', ctrlKey: true, shiftKey: true },
+                { key: 'A', altKey: true, shiftKey: true }
+            ];
+            
+            // 键盘事件监听
+            document.addEventListener('keydown', (e) => {
+                // 检查是否匹配任何截图快捷键模式
+                const isScreenshotKey = screenshotKeyPatterns.some(pattern => {
+                    return e.key === pattern.key &&
+                           e.ctrlKey === !!pattern.ctrlKey &&
+                           e.altKey === !!pattern.altKey &&
+                           e.shiftKey === !!pattern.shiftKey &&
+                           e.metaKey === !!pattern.metaKey &&
+                           e.winKey === !!pattern.winKey;
+                });
+                
+                if (isScreenshotKey) {
+                    console.log('Screenshot key detected:', e.key, e.ctrlKey, e.altKey, e.shiftKey);
+                    fastClearCanvas();
+                }
+            });
+            
+            // 窗口焦点检测
+            let lastFocusTime = Date.now();
+            let focusLossCount = 0;
+            
+            // 监听窗口失焦事件
+            window.addEventListener('blur', () => {
+                const currentTime = Date.now();
+                const timeSinceLastFocus = currentTime - lastFocusTime;
+                
+                // 短时间内多次失焦可能是截图工具在激活
+                if (timeSinceLastFocus < 1000) {
+                    focusLossCount++;
+                    if (focusLossCount >= 2) {
+                        console.log('Multiple focus losses detected, assuming screenshot');
+                        fastClearCanvas();
+                        focusLossCount = 0;
+                    }
+                } else {
+                    focusLossCount = 1;
+                }
+                
+                lastFocusTime = currentTime;
+            });
+            
+            // 监听窗口重新获得焦点事件
+            window.addEventListener('focus', () => {
+                focusLossCount = 0;
+            });
+            
+            // 鼠标事件异常检测
+            let lastMouseMoveTime = Date.now();
+            let mouseStationaryCount = 0;
+            
+            document.addEventListener('mousemove', () => {
+                lastMouseMoveTime = Date.now();
+                mouseStationaryCount = 0;
+            });
+            
+            // 定期检查鼠标是否长时间不动
+            setInterval(() => {
+                const timeSinceLastMove = Date.now() - lastMouseMoveTime;
+                if (timeSinceLastMove > 1000 && timeSinceLastMove < 5000) {
+                    mouseStationaryCount++;
+                    if (mouseStationaryCount >= 3) {
+                        console.log('Mouse stationary detected, possible screenshot in progress');
+                        fastClearCanvas();
+                        mouseStationaryCount = 0;
+                    }
+                } else {
+                    mouseStationaryCount = 0;
+                }
+            }, 500);
+        }
+        
+        // 初始化截图检测
+        detectScreenshot();
+
         // 上一个鼠标位置
         let lastMousePos = null;
         
         // 鼠标移动事件
         document.addEventListener('mousemove', (e) => {
-            if (!config.enabled) return;
+            if (!config.enabled || !config.visible) return;
 
             const currentPos = {
                 x: e.clientX,
@@ -320,7 +478,7 @@
 
         // 绘制平滑轨迹（使用Catmull-Rom曲线和抗锯齿）
         function drawTrail() {
-            if (!config.enabled || trailPoints.length < 2) {
+            if (!config.enabled || !config.visible || trailPoints.length < 2) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 return;
             }
@@ -353,6 +511,12 @@
                 effectiveOpacity = currentPreset.opacity;
             }
             
+            // 如果是预设模式，使用预设的fadeTime
+            let effectiveFadeTime = config.fadeTime;
+            if (currentPreset) {
+                effectiveFadeTime = currentPreset.fadeTime;
+            }
+            
             // 检查是否需要发光效果
             const shouldGlow = currentPreset && currentPreset.glow;
             const glowWidth = currentPreset ? (currentPreset.glowBlur || 2) * 2 : 4;
@@ -369,6 +533,9 @@
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
             
+            // 获取当前时间
+            const currentTime = Date.now();
+            
             // 优化：只绘制一次轨迹，通过分层绘制实现发光效果
             // 1. 首先绘制发光效果（如果需要），使用较宽的线条和半透明颜色
             if (shouldGlow) {
@@ -377,7 +544,10 @@
                 ctx.lineWidth = (effectiveWidth + glowWidth) * scale;
                 
                 for (let i = 0; i < sortedPoints.length - 1; i++) {
-                    const trailProgress = i / (sortedPoints.length - 1);
+                    // 使用时间计算透明度，而不是位置比例
+                    const pointAge = currentTime - sortedPoints[i + 1].createdAt;
+                    const ageRatio = pointAge / effectiveFadeTime;
+                    const trailProgress = 1 - Math.max(0, Math.min(1, ageRatio));
                     const alpha = effectiveOpacity * trailProgress * glowOpacity;
                     
                     if (alpha < 0.05) continue;
@@ -403,10 +573,10 @@
             ctx.lineWidth = effectiveWidth * scale;
             
             for (let i = 0; i < sortedPoints.length - 1; i++) {
-                // 计算当前线段在轨迹中的位置比例（从尾部到头部）
-                const trailProgress = i / (sortedPoints.length - 1);
-                
-                // 计算当前线段的透明度：尾部完全透明，头部完全不透明
+                // 使用时间计算透明度，而不是位置比例
+                const pointAge = currentTime - sortedPoints[i + 1].createdAt;
+                const ageRatio = pointAge / effectiveFadeTime;
+                const trailProgress = 1 - Math.max(0, Math.min(1, ageRatio));
                 const alpha = effectiveOpacity * trailProgress;
                 
                 // 跳过几乎透明的线段

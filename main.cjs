@@ -1,4 +1,4 @@
-const { app, Tray, Menu, BrowserWindow, ipcMain, nativeImage } = require('electron');
+const { app, Tray, Menu, BrowserWindow, ipcMain, nativeImage, globalShortcut } = require('electron');
 const path = require('path');
 
 let Store = null;
@@ -13,12 +13,15 @@ let currentConfig = {
   gradientColors: ['#ff0000', '#00ff00'],
   preset: 0,
   gradientLength: 100,
-  gradientTransition: 0.5
+  gradientTransition: 0.5,
+  shortcutEnabled: true, // 快捷键开关，默认为true
+  screenshotEnabled: true // 截图显示开关，默认为true
 };
 
 let tray = null;
 let mainWindow = null;
 let trailWindow = null;
+let settingsWindow = null;
 
 // 在应用准备就绪时动态导入 electron-store
 app.whenReady().then(async () => {
@@ -39,7 +42,9 @@ app.whenReady().then(async () => {
         gradientColors: ['#ff0000', '#00ff00'],
         preset: 0,
         gradientLength: 100,
-        gradientTransition: 0.5
+        gradientTransition: 0.5,
+        shortcutEnabled: true,
+        screenshotEnabled: true
       }
     });
     
@@ -139,6 +144,11 @@ function showMainWindow() {
     trailWindow.hide();
   }
   
+  // 关闭设置窗口
+  if (settingsWindow) {
+    settingsWindow.hide();
+  }
+  
   // 创建或显示主窗口
   if (!mainWindow) {
     createMainWindow();
@@ -159,6 +169,8 @@ function hideMainWindow() {
     }
   }
 }
+
+// 设置窗口功能已合并到主窗口中，移除了相关函数
 
 // 创建轨迹窗口
 function createTrailWindow() {
@@ -236,7 +248,9 @@ app.whenReady().then(async () => {
         gradientColors: ['#ff0000', '#00ff00'],
         preset: 0,
         gradientLength: 100,
-        gradientTransition: 0.5
+        gradientTransition: 0.5,
+        shortcutEnabled: true,
+        screenshotEnabled: true
       }
     });
     
@@ -251,12 +265,42 @@ app.whenReady().then(async () => {
     // 创建并自动开启透明层和轨迹
     createTrailWindow();
     
+    // 注册全局快捷键 Shift+Alt+W
+    const ret = globalShortcut.register('Shift+Alt+W', () => {
+        console.log('Global shortcut Shift+Alt+W pressed');
+        // 如果主窗口存在且可见，忽略快捷键触发
+        if (mainWindow && mainWindow.isVisible()) {
+            console.log('Main window is visible, ignoring shortcut');
+            return;
+        }
+        if (trailWindow) {
+            // 移除透明层
+            console.log('Destroying trail window');
+            trailWindow.destroy();
+            trailWindow = null;
+        } else {
+            // 重新创建透明层
+            console.log('Creating new trail window');
+            createTrailWindow();
+            // 确保立即发送最新配置
+            if (trailWindow && trailWindow.webContents) {
+                trailWindow.webContents.send('update-config', currentConfig);
+            }
+        }
+    });
+    
+    if (ret) {
+        console.log('Global shortcut registered successfully');
+    } else {
+        console.log('Failed to register global shortcut');
+    }
+    
     // 监听窗口激活事件（macOS）
     app.on('activate', () => {
-      if (BrowserWindow.getAllWindows().length === 0) {
-        createTray();
-        createTrailWindow();
-      }
+        if (BrowserWindow.getAllWindows().length === 0) {
+            createTray();
+            createTrailWindow();
+        }
     });
   } catch (error) {
     console.error('Failed to load electron-store:', error);
@@ -265,10 +309,17 @@ app.whenReady().then(async () => {
 
 // 所有窗口关闭事件
 app.on('window-all-closed', () => {
-  // 在 macOS 上保持应用运行
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+    // 保持应用运行在系统托盘中，不要退出
+    // 注释掉默认的退出逻辑，这样应用程序会一直运行在系统托盘中
+    // if (process.platform !== 'darwin') {
+    //     app.quit();
+    // }
+});
+
+// 在应用退出前注销全局快捷键
+app.on('will-quit', () => {
+    console.log('Unregistering global shortcut');
+    globalShortcut.unregisterAll();
 });
 
 // 监听进程退出事件
@@ -311,3 +362,6 @@ ipcMain.on('minimize-window', () => {
 ipcMain.on('close-window', () => {
   hideMainWindow();
 });
+
+// 移除了设置窗口事件，设置功能已合并到主窗口中
+// 移除了渲染进程转发的快捷键事件，改为使用全局快捷键

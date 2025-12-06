@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置</title>
+    <style>
+        /* 拟态风格基础设置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* 拟态风格核心变量 */
+        :root {
+            --bg-color: #e0e0e0;
+            --text-color: #555;
+            --shadow-light: #ffffff;
+            --shadow-dark: #bebebe;
+            --border-radius: 12px;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            color: var(--text-color);
+        }
+        
+        .container {
+            width: 100%;
+            height: 100vh;
+            background: var(--bg-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 内容区域层级设置 */
+        .header,
+        .content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            background: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            -webkit-app-region: drag;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        /* 窗口控制按钮 - 拟态风格 */
+        .window-controls {
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+            position: relative;
+        }
+        
+        .window-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            padding: 0;
+            -webkit-app-region: no-drag;
+            background: var(--bg-color);
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+            color: var(--text-color);
+        }
+        
+        .window-btn:hover {
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+        }
+        
+        .window-btn.close {
+            color: #ff5252;
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+            color: var(--text-color);
+        }
+        
+        /* 内容区域 - 拟态风格 */
+        .content {
+            padding: 30px 24px;
+            background: var(--bg-color);
+            height: calc(100% - 80px);
+            overflow-y: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* 开关样式 - 拟态风格 */
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: var(--bg-color);
+            border-radius: var(--border-radius);
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+            margin-bottom: 20px;
+        }
+        
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+        
+        /* 拟态风格的开关按钮 */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-color);
+            transition: .3s;
+            border-radius: 28px;
+            box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background: var(--bg-color);
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+        }
+        
+        input:checked + .toggle-slider {
+            box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light), inset 0 0 0 14px rgba(76, 175, 80, 0.7);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+            background: #4CAF50;
+        }
+        
+        /* 快捷键提示样式 */
+        .shortcut-info {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .shortcut-key {
+            display: inline-block;
+            padding: 4px 8px;
+            margin-left: 8px;
+            background: var(--bg-color);
+            border-radius: 4px;
+            box-shadow: 2px 2px 4px var(--shadow-dark), -2px -2px 4px var(--shadow-light);
+            font-family: monospace;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>设置</h1>
+            <div class="window-controls">
+                <button class="window-btn close" id="closeBtn">×</button>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- 快捷键开关 -->
+            <div class="toggle-item">
+                <div>
+                    <label class="toggle-label">快捷键控制</label>
+                    <div class="shortcut-info">
+                        临时显示/隐藏轨迹
+                        <span class="shortcut-key">Shift + Alt + H</span>
+                    </div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="shortcutEnabled" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <!-- 截图显示开关 -->
+            <!-- <div class="toggle-item">
+                <div>
+                    <label class="toggle-label">截图显示轨迹</label>
+                    <div class="shortcut-info">
+                        控制截图时是否显示轨迹
+                    </div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="screenshotEnabled" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div> -->
+        </div>
+    </div>
+    
+    <script>
+        const { ipcRenderer } = require('electron');
+        
+        // 获取DOM元素
+        const shortcutEnabled = document.getElementById('shortcutEnabled');
+        const screenshotEnabled = document.getElementById('screenshotEnabled');
+        const closeBtn = document.getElementById('closeBtn');
+        
+        // 关闭按钮事件
+        closeBtn.addEventListener('click', () => {
+            ipcRenderer.send('close-settings-window');
+        });
+        
+        // 快捷键开关事件
+        shortcutEnabled.addEventListener('change', (e) => {
+            ipcRenderer.send('update-settings', {
+                shortcutEnabled: e.target.checked
+            });
+        });
+        
+        // 截图显示开关事件
+        screenshotEnabled.addEventListener('change', (e) => {
+            ipcRenderer.send('update-settings', {
+                screenshotEnabled: e.target.checked
+            });
+        });
+        
+        // 加载设置
+        ipcRenderer.on('load-settings', (event, settings) => {
+            shortcutEnabled.checked = settings.shortcutEnabled || true;
+            screenshotEnabled.checked = settings.screenshotEnabled || true;
+        });
+    </script>
+</body>
+</html>
