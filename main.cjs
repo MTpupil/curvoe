@@ -15,7 +15,8 @@ let currentConfig = {
   gradientLength: 100,
   gradientTransition: 0.5,
   shortcutEnabled: true, // 快捷键开关，默认为true
-  screenshotEnabled: true // 截图显示开关，默认为true
+  autoStart: false, // 开机自启开关，默认为false
+  theme: 'light' // 主题，默认为light
 };
 
 let tray = null;
@@ -44,7 +45,8 @@ app.whenReady().then(async () => {
         gradientLength: 100,
         gradientTransition: 0.5,
         shortcutEnabled: true,
-        screenshotEnabled: true
+        autoStart: false,
+        theme: 'light'
       }
     });
     
@@ -250,7 +252,8 @@ app.whenReady().then(async () => {
         gradientLength: 100,
         gradientTransition: 0.5,
         shortcutEnabled: true,
-        screenshotEnabled: true
+        autoStart: false,
+        theme: 'light'
       }
     });
     
@@ -258,6 +261,12 @@ app.whenReady().then(async () => {
     currentConfig = store.get();
     
     console.log('加载的配置:', currentConfig);
+    
+    // 应用开机自启设置
+    app.setLoginItemSettings({
+        openAtLogin: currentConfig.autoStart === true,
+        openAsHidden: true // 开机时隐藏主窗口
+    });
     
     // 创建系统托盘
     createTray();
@@ -365,3 +374,21 @@ ipcMain.on('close-window', () => {
 
 // 移除了设置窗口事件，设置功能已合并到主窗口中
 // 移除了渲染进程转发的快捷键事件，改为使用全局快捷键
+
+// 监听开机自启设置更新
+ipcMain.on('update-autostart', (event, enabled) => {
+    console.log('Updating autostart setting:', enabled);
+    
+    // 保存配置到存储（如果 store 已加载）
+    if (store) {
+        store.set('autoStart', enabled);
+    }
+    
+    currentConfig.autoStart = enabled;
+    
+    // 应用开机自启设置
+    app.setLoginItemSettings({
+        openAtLogin: enabled,
+        openAsHidden: true
+    });
+});

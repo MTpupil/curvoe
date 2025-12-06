@@ -202,13 +202,11 @@
         
         // 快速清空画布功能
         function fastClearCanvas() {
-            if (!config.screenshotEnabled) {
-                console.log('Fast clearing canvas due to screenshot detection');
-                // 清空画布，不影响透明层窗口
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                // 清空轨迹点数组
-                trailPoints = [];
-            }
+            console.log('Fast clearing canvas due to screenshot detection');
+            // 清空画布，不影响透明层窗口
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // 清空轨迹点数组
+            trailPoints = [];
         }
         
         // 检测截图操作

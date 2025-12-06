@@ -25,6 +25,14 @@
             --border-radius: 12px;
         }
         
+        /* 夜间模式变量 */
+        :root.dark-theme {
+            --bg-color: #2d2d2d;
+            --text-color: #e0e0e0;
+            --shadow-light: #3d3d3d;
+            --shadow-dark: #1d1d1d;
+        }
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: var(--bg-color);
@@ -32,6 +40,7 @@
             padding: 0;
             overflow: hidden;
             color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         
         .container {
@@ -82,6 +91,14 @@
         }
         
         .window-btn.settings.active {
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+        }
+        
+        .window-btn.theme {
+            font-size: 14px;
+        }
+        
+        .window-btn.theme:hover {
             box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
         }
         
@@ -774,6 +791,7 @@
                 </div>
             </div>
             <div class="window-controls">
+                <button class="window-btn theme" id="themeBtn">🌞</button>
                 <button class="window-btn settings" id="settingsBtn">⚙️</button>
                 <button class="window-btn minimize" id="minimizeBtn">—</button>
                 <button class="window-btn close" id="closeBtn">×</button>
@@ -782,9 +800,9 @@
         
         <div class="content">
         
-        <!-- 路径模式切换 -->
+        <!-- 轨迹模式切换 -->
         <div class="control-group">
-            <label class="control-label">路径模式</label>
+            <label class="control-label">轨迹模式</label>
             <div class="mode-selector">
                 <label class="mode-option">
                     <input type="radio" name="trailMode" value="single" id="modeSingle">
@@ -939,19 +957,21 @@
                 </label>
             </div>
             
-            <!-- 截图显示开关 -->
-            <!-- <div class="toggle-item">
+
+            
+            <!-- 开机自启开关 -->
+            <div class="toggle-item">
                 <div>
-                    <label class="toggle-label">截图显示轨迹</label>
+                    <label class="toggle-label">开机自启</label>
                     <div class="shortcut-info">
-                        控制截图时是否显示轨迹
+                        开机时自动启动应用
                     </div>
                 </div>
                 <label class="toggle-switch">
-                    <input type="checkbox" id="screenshotEnabled" checked>
+                    <input type="checkbox" id="autoStartEnabled" checked>
                     <span class="toggle-slider"></span>
                 </label>
-            </div> -->
+            </div>
         </div>
     
     </div>
@@ -1006,7 +1026,10 @@
             gradientColors: ['#ff0000', '#00ff00'], // 渐变模式颜色
             preset: 0, // 预设模式模板索引
             gradientLength: 100, // 渐变长度
-            gradientTransition: 0.5 // 渐变过渡程度（0-1）
+            gradientTransition: 0.5, // 渐变过渡程度（0-1）
+            shortcutEnabled: true, // 快捷键开关
+            autoStart: false, // 开机自启开关
+            theme: 'light' // 主题：light, dark
         };
         
         // 获取主canvas元素
@@ -1767,12 +1790,14 @@
         
         // 页面切换状态管理
         let isSettingsPageOpen = false;
+        let isDarkTheme = false;
         
         // 获取主内容区域元素
         const mainContentElements = document.querySelectorAll('.control-group, .mode-settings');
         const settingsPage = document.getElementById('settingsPage');
         const shortcutEnabled = document.getElementById('shortcutEnabled');
-        const screenshotEnabled = document.getElementById('screenshotEnabled');
+        const autoStartEnabled = document.getElementById('autoStartEnabled');
+        const themeBtn = document.getElementById('themeBtn');
         
         // 切换页面显示状态
         function toggleSettingsPage() {
@@ -1789,35 +1814,69 @@
             
             // 加载当前设置
             loadSettings();
+            
+            // 非设置页面时，确保只显示当前选中的模式设置
+            if (!isSettingsPageOpen) {
+                // 触发当前选中模式的显示
+                const currentMode = document.querySelector('input[name="trailMode"]:checked');
+                if (currentMode) {
+                    handleModeChange({ target: { value: currentMode.value } });
+                }
+            }
+        }
+        
+        // 切换主题
+        function toggleTheme() {
+            isDarkTheme = !isDarkTheme;
+            
+            // 更新主题按钮图标
+            themeBtn.textContent = isDarkTheme ? '🌙' : '🌞';
+            
+            // 应用主题类
+            document.documentElement.classList.toggle('dark-theme', isDarkTheme);
+            
+            // 保存主题设置
+            trailSettings.theme = isDarkTheme ? 'dark' : 'light';
+            updateSettings();
         }
         
         // 加载设置
         function loadSettings() {
             shortcutEnabled.checked = trailSettings.shortcutEnabled !== false;
-            screenshotEnabled.checked = trailSettings.screenshotEnabled !== false;
+            autoStartEnabled.checked = trailSettings.autoStart !== false;
+            
+            // 加载主题设置
+            isDarkTheme = trailSettings.theme === 'dark';
+            themeBtn.textContent = isDarkTheme ? '🌙' : '🌞';
+            document.documentElement.classList.toggle('dark-theme', isDarkTheme);
         }
         
         // 保存设置
         function saveSettings() {
             trailSettings.shortcutEnabled = shortcutEnabled.checked;
-            trailSettings.screenshotEnabled = screenshotEnabled.checked;
+            trailSettings.autoStart = autoStartEnabled.checked;
+            // 发送开机自启设置到主进程
+            ipcRenderer.send('update-autostart', autoStartEnabled.checked);
             updateSettings();
         }
         
         // 设置按钮事件
         settingsBtn.addEventListener('click', toggleSettingsPage);
         
+        // 主题按钮事件
+        themeBtn.addEventListener('click', toggleTheme);
+        
         // 快捷键开关事件
         shortcutEnabled.addEventListener('change', saveSettings);
         
-        // 截图显示开关事件
-        screenshotEnabled.addEventListener('change', saveSettings);
+        // 开机自启开关事件
+        autoStartEnabled.addEventListener('change', saveSettings);
         
         // 监听键盘事件，实现快捷键功能
         document.addEventListener('keydown', (e) => {
-            // Shift + Alt + H 快捷键
-            if (e.shiftKey && e.altKey && e.key === 'H') {
-                console.log('Renderer process detected Shift+Alt+H keypress');
+            // Shift + Alt + W 快捷键
+            if (e.shiftKey && e.altKey && e.key === 'W') {
+                console.log('Renderer process detected Shift+Alt+W keypress');
                 // 转发快捷键事件到主进程
                 ipcRenderer.send('toggle-trail-shortcut');
             }
