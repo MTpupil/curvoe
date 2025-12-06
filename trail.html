@@ -63,6 +63,19 @@
                 gradientTransition: 0.8
             },
             {
+                name: '马卡龙浅彩发光',
+                mode: 'gradient',
+                gradientColors: ['#FFE6EF', '#FFD9B3', '#FFF4C2', '#C2F0E1', '#FFCCD5', '#CCE5FF' ,'#E5CCFF'], 
+                width: 3,
+                opacity: 0.9,
+                fadeTime: 1500,
+                gradientLength: 150,
+                gradientTransition: 0.8,
+                glow: true,
+                glowBlur: 1,
+                glowOpacity: 0.2
+            },
+            {
                 name: '模板 2',
                 mode: 'gradient',
                 gradientColors: ['#ff0000', '#00ff00'],
@@ -322,19 +335,28 @@
                 return;
             }
             
+            // 获取当前预设配置
+            let currentPreset = null;
+            if (config.mode === 'preset') {
+                currentPreset = presets[config.preset] || presets[0];
+            }
+            
             // 如果是预设模式，使用预设的宽度
             let effectiveWidth = config.width;
-            if (config.mode === 'preset') {
-                const preset = presets[config.preset] || presets[0];
-                effectiveWidth = preset.width;
+            if (currentPreset) {
+                effectiveWidth = currentPreset.width;
             }
             
             // 如果是预设模式，使用预设的透明度
             let effectiveOpacity = config.opacity;
-            if (config.mode === 'preset') {
-                const preset = presets[config.preset] || presets[0];
-                effectiveOpacity = preset.opacity;
+            if (currentPreset) {
+                effectiveOpacity = currentPreset.opacity;
             }
+            
+            // 检查是否需要发光效果
+            const shouldGlow = currentPreset && currentPreset.glow;
+            const glowWidth = currentPreset ? (currentPreset.glowBlur || 2) * 2 : 4;
+            const glowOpacity = currentPreset ? currentPreset.glowOpacity || 0.5 : 0.5;
             
             // 启用高质量抗锯齿和图像平滑
             ctx.imageSmoothingEnabled = true;
@@ -346,9 +368,40 @@
             
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
-            ctx.lineWidth = effectiveWidth * scale; // 考虑缩放因子
             
-            // 一次性绘制整个轨迹，使用Catmull-Rom曲线平滑算法
+            // 优化：只绘制一次轨迹，通过分层绘制实现发光效果
+            // 1. 首先绘制发光效果（如果需要），使用较宽的线条和半透明颜色
+            if (shouldGlow) {
+                // 绘制发光效果，使用更高效的方式：宽线条 + 半透明
+                ctx.save();
+                ctx.lineWidth = (effectiveWidth + glowWidth) * scale;
+                
+                for (let i = 0; i < sortedPoints.length - 1; i++) {
+                    const trailProgress = i / (sortedPoints.length - 1);
+                    const alpha = effectiveOpacity * trailProgress * glowOpacity;
+                    
+                    if (alpha < 0.05) continue;
+                    
+                    const point1 = sortedPoints[i];
+                    const point2 = sortedPoints[i + 1];
+                    const segmentColor = point2.color || config.color;
+                    
+                    ctx.strokeStyle = `${segmentColor}${Math.floor(alpha * 255).toString(16).padStart(2, '0')}`;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(point1.x * scale, point1.y * scale);
+                    
+                    // 简化：对于发光效果，使用直线连接，减少计算复杂度
+                    ctx.lineTo(point2.x * scale, point2.y * scale);
+                    ctx.stroke();
+                }
+                
+                ctx.restore();
+            }
+            
+            // 2. 绘制原始轨迹，使用正常宽度和不透明颜色
+            ctx.lineWidth = effectiveWidth * scale;
+            
             for (let i = 0; i < sortedPoints.length - 1; i++) {
                 // 计算当前线段在轨迹中的位置比例（从尾部到头部）
                 const trailProgress = i / (sortedPoints.length - 1);
@@ -368,17 +421,14 @@
                 ctx.strokeStyle = `${segmentColor}${Math.floor(alpha * 255).toString(16).padStart(2, '0')}`;
                 
                 ctx.beginPath();
+                ctx.moveTo(point1.x * scale, point1.y * scale);
                 
                 // 对于点数量较少的情况，使用简单的平滑处理
                 if (sortedPoints.length < 3) {
-                    ctx.moveTo(point1.x * scale, point1.y * scale);
                     ctx.lineTo(point2.x * scale, point2.y * scale);
                 } else if (i === 0) {
-                    // 第一个线段，使用特殊处理
+                    // 第一个线段，使用二次贝塞尔曲线
                     const nextPoint = sortedPoints[i + 2];
-                    ctx.moveTo(point1.x * scale, point1.y * scale);
-                    
-                    // 使用二次贝塞尔曲线
                     const cp1x = point1.x + (point2.x - point1.x) * 0.5;
                     const cp1y = point1.y + (point2.y - point1.y) * 0.5;
                     ctx.quadraticCurveTo(
@@ -394,18 +444,14 @@
                         prevPoint, point1, point2, nextPoint, 0.9 // 更高的张力值
                     );
                     
-                    ctx.moveTo(point1.x * scale, point1.y * scale);
                     ctx.bezierCurveTo(
                         cp1x * scale, cp1y * scale, 
                         cp2x * scale, cp2y * scale, 
                         point2.x * scale, point2.y * scale
                     );
                 } else {
-                    // 最后一个线段，使用特殊处理
+                    // 最后一个线段，使用二次贝塞尔曲线
                     const prevPoint = sortedPoints[i - 1];
-                    ctx.moveTo(point1.x * scale, point1.y * scale);
-                    
-                    // 使用二次贝塞尔曲线
                     const cp1x = point2.x - (point2.x - prevPoint.x) * 0.5;
                     const cp1y = point2.y - (point2.y - prevPoint.y) * 0.5;
                     ctx.quadraticCurveTo(

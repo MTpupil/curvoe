@@ -868,6 +868,11 @@
                     </div>
                     <div class="dropdown-menu" id="dropdownMenu">
                         <div class="dropdown-item" data-value="0" id="presetItem0" class="selected">马卡龙浅彩</div>
+                        <div class="dropdown-item" data-value="1" id="presetItem1">马卡龙浅彩发光</div>
+                        <div class="dropdown-item" data-value="2" id="presetItem2">模板 2</div>
+                        <div class="dropdown-item" data-value="3" id="presetItem3">模板 3</div>
+                        <div class="dropdown-item" data-value="4" id="presetItem4">模板 4</div>
+                        <div class="dropdown-item" data-value="5" id="presetItem5">模板 5</div>
                     </div>
                 </div>
                 <!-- 隐藏的select用于保存实际值 -->
@@ -959,12 +964,25 @@
             {
                 name: '马卡龙浅彩',
                 mode: 'gradient',
-                gradientColors: ['#ffb6c1', '#ffdab9', '#f0fff0', '#e6e6fa'], // 浅粉、淡橙、嫩黄、淡紫
-                width: 5,
+                gradientColors: ['#FFE6EF', '#FFD9B3', '#FFF4C2', '#C2F0E1', '#FFCCD5', '#CCE5FF' ,'#E5CCFF'], 
+                width: 3,
                 opacity: 0.8,
-                fadeTime: 1000,
+                fadeTime: 1500,
                 gradientLength: 150,
                 gradientTransition: 0.8
+            },
+            {
+                name: '马卡龙浅彩发光',
+                mode: 'gradient',
+                gradientColors: ['#FFE6EF', '#FFD9B3', '#FFF4C2', '#C2F0E1', '#FFCCD5', '#CCE5FF' ,'#E5CCFF'], 
+                width: 3,
+                opacity: 0.9,
+                fadeTime: 1500,
+                gradientLength: 150,
+                gradientTransition: 0.8,
+                glow: true,
+                glowBlur: 1,
+                glowOpacity: 0.2
             },
             {
                 name: '模板 2',
