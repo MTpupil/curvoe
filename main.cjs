@@ -187,6 +187,21 @@ function createTrailWindow() {
   // 设置窗口忽略鼠标事件，但转发鼠标移动事件
   trailWindow.setIgnoreMouseEvents(true, { forward: true });
   
+  // 设置窗口始终在最上面，使用 screen-saver 层级，这是 Electron 中最高的窗口层级之一
+  trailWindow.setAlwaysOnTop(true, 'screen-saver');
+  
+  // 监听窗口的 focus 事件，确保窗口始终保持在最上面
+  trailWindow.on('blur', () => {
+    trailWindow.setAlwaysOnTop(true, 'screen-saver');
+  });
+  
+  // 定期检查并重新设置 alwaysOnTop，确保窗口始终在最上面
+  setInterval(() => {
+    if (trailWindow) {
+      trailWindow.setAlwaysOnTop(true, 'screen-saver');
+    }
+  }, 1000);
+  
   // 加载轨迹页面
   trailWindow.loadFile('trail.html');
   

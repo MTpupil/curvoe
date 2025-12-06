@@ -867,11 +867,7 @@
                         </svg>
                     </div>
                     <div class="dropdown-menu" id="dropdownMenu">
-                        <div class="dropdown-item" data-value="0" id="presetItem0" class="selected">模板 1</div>
-                        <div class="dropdown-item" data-value="1" id="presetItem1">模板 2</div>
-                        <div class="dropdown-item" data-value="2" id="presetItem2">模板 3</div>
-                        <div class="dropdown-item" data-value="3" id="presetItem3">模板 4</div>
-                        <div class="dropdown-item" data-value="4" id="presetItem4">模板 5</div>
+                        <div class="dropdown-item" data-value="0" id="presetItem0" class="selected">马卡龙浅彩</div>
                     </div>
                 </div>
                 <!-- 隐藏的select用于保存实际值 -->
@@ -958,19 +954,81 @@
         // 上一个鼠标位置
         let lastMousePos = null;
         
+        // 预设样式配置（与trail.html保持一致）
+        const presets = [
+            {
+                name: '马卡龙浅彩',
+                mode: 'gradient',
+                gradientColors: ['#ffb6c1', '#ffdab9', '#f0fff0', '#e6e6fa'], // 浅粉、淡橙、嫩黄、淡紫
+                width: 5,
+                opacity: 0.8,
+                fadeTime: 1000,
+                gradientLength: 150,
+                gradientTransition: 0.8
+            },
+            {
+                name: '模板 2',
+                mode: 'gradient',
+                gradientColors: ['#ff0000', '#00ff00'],
+                width: 5,
+                opacity: 0.8,
+                fadeTime: 1000,
+                gradientLength: 100,
+                gradientTransition: 0.5
+            },
+            {
+                name: '模板 3',
+                mode: 'gradient',
+                gradientColors: ['#0000ff', '#ffff00'],
+                width: 5,
+                opacity: 0.8,
+                fadeTime: 1000,
+                gradientLength: 100,
+                gradientTransition: 0.5
+            },
+            {
+                name: '模板 4',
+                mode: 'gradient',
+                gradientColors: ['#ff00ff', '#00ffff'],
+                width: 5,
+                opacity: 0.8,
+                fadeTime: 1000,
+                gradientLength: 100,
+                gradientTransition: 0.5
+            },
+            {
+                name: '模板 5',
+                mode: 'gradient',
+                gradientColors: ['#00ff00', '#0000ff'],
+                width: 5,
+                opacity: 0.8,
+                fadeTime: 1000,
+                gradientLength: 100,
+                gradientTransition: 0.5
+            }
+        ];
+
         // 计算轨迹点的固定颜色，在创建时分配，不再改变
         function calculateFixedColor() {
-            if (trailSettings.mode !== 'gradient' || !trailSettings.gradientColors || trailSettings.gradientColors.length < 2) {
-                return trailSettings.color;
+            let effectiveSettings = trailSettings;
+            
+            // 如果是预设模式，使用预设配置
+            if (trailSettings.mode === 'preset') {
+                const preset = presets[trailSettings.preset] || presets[0];
+                effectiveSettings = { ...trailSettings, ...preset };
+            }
+            
+            if (effectiveSettings.mode !== 'gradient' || !effectiveSettings.gradientColors || effectiveSettings.gradientColors.length < 2) {
+                return effectiveSettings.color;
             }
             
             // 实现沿轨迹的单一渐变，从第一个颜色到最后一个颜色
             // 每个点根据其在轨迹中的位置获得唯一颜色
             // 使用总生成点计数作为沿渐变的位置
-            const positionInGradient = totalPointsGenerated % trailSettings.gradientLength;
-            const normalizedPosition = positionInGradient / trailSettings.gradientLength;
+            const positionInGradient = totalPointsGenerated % effectiveSettings.gradientLength;
+            const normalizedPosition = positionInGradient / effectiveSettings.gradientLength;
             
-            const colorCount = trailSettings.gradientColors.length;
+            const colorCount = effectiveSettings.gradientColors.length;
             
             // 计算在颜色数组中的位置（非循环）
             const positionInArray = normalizedPosition * (colorCount - 1);
@@ -983,13 +1041,13 @@
             let transitionRatio = positionInArray - startIndex;
             
             // 使用 gradientTransition 来调整过渡效果
-            if (trailSettings.gradientTransition > 0) {
-                transitionRatio = easeInOutCubic(transitionRatio, trailSettings.gradientTransition);
+            if (effectiveSettings.gradientTransition > 0) {
+                transitionRatio = easeInOutCubic(transitionRatio, effectiveSettings.gradientTransition);
             }
             
             // 获取起始颜色和结束颜色
-            const startColorHex = trailSettings.gradientColors[startIndex];
-            const endColorHex = trailSettings.gradientColors[endIndex];
+            const startColorHex = effectiveSettings.gradientColors[startIndex];
+            const endColorHex = effectiveSettings.gradientColors[endIndex];
             
             // 获取起始颜色和结束颜色的RGB值
             const startColor = hexToRgb(startColorHex);
@@ -1021,27 +1079,26 @@
             // 递增总生成点计数
             totalPointsGenerated++;
             
-            // 为当前点计算固定颜色
-            const pointColor = calculateFixedColor();
-            
             const currentPos = { 
                 x, 
                 y, 
-                createdAt: Date.now(), // 记录点的生成时间
-                color: pointColor // 为当前点分配固定颜色
+                createdAt: Date.now() // 记录点的生成时间
             };
+            
+            // 为当前点计算固定颜色
+            currentPos.color = calculateFixedColor();
             
             // 添加当前点
             mouseTrail.push(currentPos);
             
-            // 如果有上一个位置，且距离较远，添加中间点以确保轨迹连续
+            // 如果有上一个位置，添加更多中间点以确保轨迹连续，尤其是快速移动时
             if (lastMousePos) {
                 const dx = currentPos.x - lastMousePos.x;
                 const dy = currentPos.y - lastMousePos.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
-                // 如果距离大于10像素，添加中间点
-                const maxDistance = 10;
+                // 动态调整最大距离，速度越快，点越密集
+                const maxDistance = 5; // 减小最大距离，增加点密度
                 if (distance > maxDistance) {
                     const steps = Math.ceil(distance / maxDistance);
                     const stepX = dx / steps;
@@ -1102,7 +1159,17 @@
         // 启动动画循环
         animateTrail();
         
-        // 平滑绘制轨迹（使用贝塞尔曲线）
+        // Catmull-Rom 曲线转贝塞尔曲线的辅助函数
+        function catmullRomToBezier(p0, p1, p2, p3, tension = 0.5) {
+            const t = tension;
+            const cp1x = p1.x + (p2.x - p0.x) * t * 0.5;
+            const cp1y = p1.y + (p2.y - p0.y) * t * 0.5;
+            const cp2x = p2.x - (p3.x - p1.x) * t * 0.5;
+            const cp2y = p2.y - (p3.y - p1.y) * t * 0.5;
+            return { cp1x, cp1y, cp2x, cp2y };
+        }
+
+        // 平滑绘制轨迹（使用Catmull-Rom曲线和抗锯齿）
         function drawSmoothTrail() {
             // 清空画布
             ctx.clearRect(0, 0, mainCanvas.width / window.devicePixelRatio, mainCanvas.height / window.devicePixelRatio);
@@ -1118,9 +1185,16 @@
                 return;
             }
             
+            // 启用高质量抗锯齿和图像平滑
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            
+            // 获取设备像素比
+            const scale = window.devicePixelRatio || 1;
+            
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
-            ctx.lineWidth = trailSettings.width; // 使用固定宽度，不随时间变化
+            ctx.lineWidth = trailSettings.width; // 已经考虑了缩放
             
             // 遍历所有点，绘制从尾部到头部的轨迹
             for (let i = 0; i < sortedPoints.length - 1; i++) {
@@ -1135,33 +1209,48 @@
                 if (alpha < 0.05) continue;
                 
                 // 使用轨迹点的固定颜色
-                const prev = sortedPoints[i];     // 前一个点（更靠近尾部）
-                const curr = sortedPoints[i + 1]; // 当前点（更靠近头部）
-                const segmentColor = curr.color || trailSettings.color;
+                const point1 = sortedPoints[i];
+                const point2 = sortedPoints[i + 1];
+                const segmentColor = point2.color || trailSettings.color;
                 
                 // 设置当前线段的样式
                 ctx.strokeStyle = `${segmentColor}${Math.floor(alpha * 255).toString(16).padStart(2, '0')}`;
                 
-                // 绘制当前线段
                 ctx.beginPath();
                 
-                ctx.moveTo(prev.x, prev.y);
-                
-                if (i < sortedPoints.length - 2) {
-                    // 不是最后一个线段，使用贝塞尔曲线
-                    const next = sortedPoints[i + 2];
+                // 对于点数量较少的情况，使用简单的平滑处理
+                if (sortedPoints.length < 3) {
+                    ctx.moveTo(point1.x, point1.y);
+                    ctx.lineTo(point2.x, point2.y);
+                } else if (i === 0) {
+                    // 第一个线段，使用特殊处理
+                    const nextPoint = sortedPoints[i + 2];
+                    ctx.moveTo(point1.x, point1.y);
                     
-                    // 计算控制点，实现平滑曲线
-                    const tension = 0.5;
-                    const cp1x = curr.x - (next.x - prev.x) * tension;
-                    const cp1y = curr.y - (next.y - prev.y) * tension;
-                    const cp2x = curr.x + (next.x - prev.x) * tension;
-                    const cp2y = curr.y + (next.y - prev.y) * tension;
+                    // 使用二次贝塞尔曲线
+                    const cp1x = point1.x + (point2.x - point1.x) * 0.5;
+                    const cp1y = point1.y + (point2.y - point1.y) * 0.5;
+                    ctx.quadraticCurveTo(cp1x, cp1y, point2.x, point2.y);
+                } else if (i < sortedPoints.length - 2) {
+                    // 中间线段，使用Catmull-Rom曲线转贝塞尔曲线
+                    const prevPoint = sortedPoints[i - 1];
+                    const nextPoint = sortedPoints[i + 2];
                     
-                    ctx.bezierCurveTo(curr.x, curr.y, cp2x, cp2y, next.x, next.y);
+                    const { cp1x, cp1y, cp2x, cp2y } = catmullRomToBezier(
+                        prevPoint, point1, point2, nextPoint, 0.9 // 更高的张力值
+                    );
+                    
+                    ctx.moveTo(point1.x, point1.y);
+                    ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, point2.x, point2.y);
                 } else {
-                    // 最后一个线段，直接连线
-                    ctx.lineTo(curr.x, curr.y);
+                    // 最后一个线段，使用特殊处理
+                    const prevPoint = sortedPoints[i - 1];
+                    ctx.moveTo(point1.x, point1.y);
+                    
+                    // 使用二次贝塞尔曲线
+                    const cp1x = point2.x - (point2.x - prevPoint.x) * 0.5;
+                    const cp1y = point2.y - (point2.y - prevPoint.y) * 0.5;
+                    ctx.quadraticCurveTo(cp1x, cp1y, point2.x, point2.y);
                 }
                 
                 ctx.stroke();
