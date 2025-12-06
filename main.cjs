@@ -1,9 +1,64 @@
 const { app, Tray, Menu, BrowserWindow, ipcMain, nativeImage } = require('electron');
 const path = require('path');
 
+let Store = null;
+let store = null;
+let currentConfig = {
+  enabled: true,
+  mode: 'single',
+  width: 5,
+  opacity: 0.8,
+  fadeTime: 1000,
+  color: '#ff0000',
+  gradientColors: ['#ff0000', '#00ff00'],
+  preset: 0,
+  gradientLength: 100,
+  gradientTransition: 0.5
+};
+
 let tray = null;
 let mainWindow = null;
 let trailWindow = null;
+
+// 在应用准备就绪时动态导入 electron-store
+app.whenReady().then(async () => {
+  try {
+    const module = await import('electron-store');
+    Store = module.default;
+    
+    // 创建配置存储
+    store = new Store({
+      name: 'mouse-trail-config',
+      defaults: {
+        enabled: true,
+        mode: 'single',
+        width: 5,
+        opacity: 0.8,
+        fadeTime: 1000,
+        color: '#ff0000',
+        gradientColors: ['#ff0000', '#00ff00'],
+        preset: 0,
+        gradientLength: 100,
+        gradientTransition: 0.5
+      }
+    });
+    
+    // 加载保存的配置
+    currentConfig = store.get();
+    
+    // 如果轨迹窗口已创建，发送配置
+    if (trailWindow) {
+      trailWindow.webContents.send('update-config', currentConfig);
+    }
+    
+    // 如果主窗口已创建，发送配置
+    if (mainWindow) {
+      mainWindow.webContents.send('load-config', currentConfig);
+    }
+  } catch (error) {
+    console.error('Failed to load electron-store:', error);
+  }
+});
 
 // 移除默认菜单
 Menu.setApplicationMenu(null);
@@ -64,6 +119,11 @@ function createMainWindow() {
   
   // 加载主页面
   mainWindow.loadFile('index.html');
+  
+  // 主窗口加载完成后发送保存的配置
+  mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow.webContents.send('load-config', currentConfig);
+  });
   
   // 窗口关闭时隐藏而非销毁
   mainWindow.on('close', (event) => {
@@ -130,6 +190,11 @@ function createTrailWindow() {
   // 加载轨迹页面
   trailWindow.loadFile('trail.html');
   
+  // 轨迹窗口加载完成后发送保存的配置
+  trailWindow.webContents.on('did-finish-load', () => {
+    trailWindow.webContents.send('update-config', currentConfig);
+  });
+  
   // 窗口关闭时处理
   trailWindow.on('closed', () => {
     trailWindow = null;
@@ -137,20 +202,50 @@ function createTrailWindow() {
 }
 
 // 应用准备就绪事件
-app.whenReady().then(() => {
-  // 创建系统托盘
-  createTray();
-  
-  // 创建并自动开启透明层和轨迹
-  createTrailWindow();
-  
-  // 监听窗口激活事件（macOS）
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createTray();
-      createTrailWindow();
-    }
-  });
+app.whenReady().then(async () => {
+  try {
+    // 动态导入 electron-store
+    const module = await import('electron-store');
+    Store = module.default;
+    
+    // 创建配置存储
+    store = new Store({
+      name: 'mouse-trail-config',
+      defaults: {
+        enabled: true,
+        mode: 'single',
+        width: 5,
+        opacity: 0.8,
+        fadeTime: 1000,
+        color: '#ff0000',
+        gradientColors: ['#ff0000', '#00ff00'],
+        preset: 0,
+        gradientLength: 100,
+        gradientTransition: 0.5
+      }
+    });
+    
+    // 加载保存的配置
+    currentConfig = store.get();
+    
+    console.log('加载的配置:', currentConfig);
+    
+    // 创建系统托盘
+    createTray();
+    
+    // 创建并自动开启透明层和轨迹
+    createTrailWindow();
+    
+    // 监听窗口激活事件（macOS）
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) {
+        createTray();
+        createTrailWindow();
+      }
+    });
+  } catch (error) {
+    console.error('Failed to load electron-store:', error);
+  }
 });
 
 // 所有窗口关闭事件
@@ -174,6 +269,13 @@ app.on('before-quit', () => {
 
 // 监听轨迹配置更新
 ipcMain.on('update-trail-config', (event, config) => {
+  // 保存配置到存储（如果 store 已加载）
+  if (store) {
+    store.set(config);
+  }
+  
+  currentConfig = config;
+  
   if (trailWindow) {
     trailWindow.webContents.send('update-config', config);
   }

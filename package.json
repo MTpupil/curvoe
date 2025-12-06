@@ -7,11 +7,19 @@
     "start": "electron .",
     "build": "electron-builder"
   },
-  "keywords": ["electron", "mouse", "trail", "cursor"],
+  "keywords": [
+    "electron",
+    "mouse",
+    "trail",
+    "cursor"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "electron": "^30.0.0",
     "electron-builder": "^24.0.0"
+  },
+  "dependencies": {
+    "electron-store": "^11.0.2"
   }
 }

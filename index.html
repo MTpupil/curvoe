@@ -296,6 +296,167 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
         
+        /* 模式选择器样式 */
+        .mode-selector {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .mode-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: #f0f0f0;
+            transition: all 0.2s ease;
+        }
+        
+        .mode-option:hover {
+            background: #e0e0e0;
+        }
+        
+        .mode-option input[type="radio"] {
+            accent-color: #667eea;
+        }
+        
+        .mode-option input[type="radio"]:checked + span {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        /* 渐变颜色选择器样式 */
+        .gradient-colors {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 8px;
+        }
+        
+        .gradient-color-item {
+            display: flex;
+        }
+        
+        .color-block {
+            position: relative;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .color-block input[type="color"] {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: transparent;
+            padding: 2px;
+            overflow: hidden;
+        }
+        
+        .color-block input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        
+        .color-block input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* 渐变颜色控制按钮 */
+        #addColorBtn {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            font-size: 20px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        #addColorBtn:hover {
+            opacity: 0.9;
+        }
+        
+        #addColorBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .remove-color-btn {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            font-size: 14px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 82, 82, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .remove-color-btn:hover {
+            background: rgba(255, 82, 82, 1);
+        }
+        
+        .remove-color-btn:disabled {
+            background: rgba(200, 200, 200, 0.8);
+            cursor: not-allowed;
+        }
+        
+
+        
+        /* 预设模板样式 */
+        .preset-templates {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 16px;
+            margin-top: 12px;
+        }
+        
+        .preset-template {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 12px;
+            border-radius: 8px;
+            background: #f0f0f0;
+            transition: all 0.2s ease;
+        }
+        
+        .preset-template:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+        
+        .preset-preview {
+            width: 80px;
+            height: 40px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
         /* 实时预览区域 */
         .preview-area {
             margin-top: 20px;
@@ -349,6 +510,47 @@
             letter-spacing: 0.5px;
         }
         
+        /* 渐变颜色控制按钮 */
+        #addColorBtn {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            font-size: 20px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .remove-color-btn {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            font-size: 16px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 82, 82, 0.8);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .remove-color-btn:hover {
+            background: rgba(255, 82, 82, 1);
+            transform: scale(1.1);
+        }
+        
+        .remove-color-btn:disabled {
+            background: rgba(200, 200, 200, 0.8);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
         button#minimizeWindow {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -393,32 +595,127 @@
             </label>
         </div>
         
+        <!-- 路径模式切换 -->
         <div class="control-group">
-            <label class="control-label">
-                轨迹宽度 <span class="value-display" id="trailWidthValue">5</span>
-            </label>
-            <input type="range" id="trailWidth" min="1" max="20" value="5">
+            <label class="control-label">路径模式</label>
+            <div class="mode-selector">
+                <label class="mode-option">
+                    <input type="radio" name="trailMode" value="single" id="modeSingle">
+                    <span>单色</span>
+                </label>
+                <label class="mode-option">
+                    <input type="radio" name="trailMode" value="gradient" id="modeGradient">
+                    <span>渐变</span>
+                </label>
+                <label class="mode-option">
+                    <input type="radio" name="trailMode" value="preset" id="modePreset">
+                    <span>预设</span>
+                </label>
+            </div>
         </div>
         
-        <div class="control-group">
-            <label class="control-label">
-                轨迹透明度 <span class="value-display" id="trailOpacityValue">0.8</span>
-            </label>
-            <input type="range" id="trailOpacity" min="0.1" max="1" step="0.1" value="0.8">
+        <!-- 单色模式设置 -->
+        <div id="singleColorSettings" class="mode-settings" style="display: none;">
+            <div class="control-group">
+                <label class="control-label">轨迹颜色</label>
+                <div class="color-picker-container">
+                    <input type="color" id="trailColor" value="#ff0000">
+                    <span id="currentColor">#ff0000</span>
+                </div>
+            </div>
         </div>
         
-        <div class="control-group">
-            <label class="control-label">
-                停留时间 <span class="value-display" id="trailFadeTimeValue">1000</span>ms
-            </label>
-            <input type="range" id="trailFadeTime" min="200" max="3000" step="100" value="1000">
+        <!-- 渐变模式设置 -->
+        <div id="gradientSettings" class="mode-settings" style="display: none;">
+            <div class="control-group">
+                <label class="control-label">渐变颜色</label>
+                <div class="gradient-colors">
+                    <div class="gradient-color-item">
+                        <div class="color-block" data-index="0">
+                            <input type="color" class="gradient-color" value="#ff0000" data-index="0">
+                            <button class="remove-color-btn" data-index="0" disabled>×</button>
+                        </div>
+                    </div>
+                    <div class="gradient-color-item">
+                        <div class="color-block" data-index="1">
+                            <input type="color" class="gradient-color" value="#00ff00" data-index="1">
+                            <button class="remove-color-btn" data-index="1" disabled>×</button>
+                        </div>
+                    </div>
+                    <div class="gradient-color-item" id="gradientColor3" style="display: none;">
+                        <div class="color-block" data-index="2">
+                            <input type="color" class="gradient-color" value="#0000ff" data-index="2">
+                            <button class="remove-color-btn" data-index="2">×</button>
+                        </div>
+                    </div>
+                    <div class="gradient-color-item" id="gradientColor4" style="display: none;">
+                        <div class="color-block" data-index="3">
+                            <input type="color" class="gradient-color" value="#ffff00" data-index="3">
+                            <button class="remove-color-btn" data-index="3">×</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <button id="addColorBtn" title="添加颜色">+</button>
+            </div>
+            <div class="control-group">
+                <label class="control-label">
+                    渐变长度 <span class="value-display" id="gradientLengthValue">100</span>
+                </label>
+                <input type="range" id="gradientLength" min="20" max="500" step="10" value="100">
+            </div>
+            <div class="control-group">
+                <label class="control-label">
+                    渐变过渡程度 <span class="value-display" id="gradientTransitionValue">0.5</span>
+                </label>
+                <input type="range" id="gradientTransition" min="0" max="1" step="0.1" value="0.5">
+            </div>
         </div>
         
-        <div class="control-group">
-            <label class="control-label">轨迹颜色</label>
-            <div class="color-picker-container">
-                <input type="color" id="trailColor" value="#ff0000">
-                <span id="currentColor">#ff0000</span>
+        <!-- 预设模式设置 -->
+        <div id="presetSettings" class="mode-settings" style="display: none;">
+            <div class="control-group">
+                <label class="control-label">预设模板</label>
+                <div class="preset-templates">
+                    <!-- 预设模板占位 -->
+                    <div class="preset-template">
+                        <div class="preset-preview"></div>
+                        <span>模板 1</span>
+                    </div>
+                    <div class="preset-template">
+                        <div class="preset-preview"></div>
+                        <span>模板 2</span>
+                    </div>
+                    <div class="preset-template">
+                        <div class="preset-preview"></div>
+                        <span>模板 3</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 通用设置（预设模式下禁用） -->
+        <div id="commonSettings">
+            <div class="control-group">
+                <label class="control-label">
+                    轨迹宽度 <span class="value-display" id="trailWidthValue">5</span>
+                </label>
+                <input type="range" id="trailWidth" min="1" max="20" value="5">
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label">
+                    轨迹透明度 <span class="value-display" id="trailOpacityValue">0.8</span>
+                </label>
+                <input type="range" id="trailOpacity" min="0.1" max="1" step="0.1" value="0.8">
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label">
+                    停留时间 <span class="value-display" id="trailFadeTimeValue">1000</span>ms
+                </label>
+                <input type="range" id="trailFadeTime" min="200" max="3000" step="100" value="1000">
             </div>
         </div>
         
@@ -441,13 +738,39 @@
         const closeBtn = document.getElementById('closeBtn');
         const currentColor = document.getElementById('currentColor');
         
+        // 渐变控制元素
+        const gradientLength = document.getElementById('gradientLength');
+        const gradientLengthValue = document.getElementById('gradientLengthValue');
+        const gradientTransition = document.getElementById('gradientTransition');
+        const gradientTransitionValue = document.getElementById('gradientTransitionValue');
+        
+        // 模式切换元素
+        const modeSingle = document.getElementById('modeSingle');
+        const modeGradient = document.getElementById('modeGradient');
+        const modePreset = document.getElementById('modePreset');
+        const singleColorSettings = document.getElementById('singleColorSettings');
+        const gradientSettings = document.getElementById('gradientSettings');
+        const presetSettings = document.getElementById('presetSettings');
+        const commonSettings = document.getElementById('commonSettings');
+        
+        // 渐变颜色元素
+        const gradientColors = document.querySelectorAll('.gradient-color');
+        const addColorBtn = document.getElementById('addColorBtn');
+        const gradientColor3 = document.getElementById('gradientColor3');
+        const gradientColor4 = document.getElementById('gradientColor4');
+        
         // 轨迹设置
         let trailSettings = {
             enabled: true,
+            mode: 'single', // 模式：single, gradient, preset
             width: 5,
             opacity: 0.8,
             fadeTime: 1000, // 停留时间（毫秒）
-            color: '#ff0000'
+            color: '#ff0000', // 单色模式颜色
+            gradientColors: ['#ff0000', '#00ff00'], // 渐变模式颜色
+            preset: 0, // 预设模式模板索引
+            gradientLength: 100, // 渐变长度
+            gradientTransition: 0.5 // 渐变过渡程度（0-1）
         };
         
         // 获取主canvas元素
@@ -470,19 +793,73 @@
         let mouseTrail = [];
         let animationFrameId = null;
         let lastMouseMoveTime = 0;
+        let totalPointsGenerated = 0; // 用于跟踪生成的点的总数，确保颜色序列一致
         
         // 上一个鼠标位置
         let lastMousePos = null;
+        
+        // 计算轨迹点的固定颜色，在创建时分配，不再改变
+        function calculateFixedColor() {
+            if (trailSettings.mode !== 'gradient' || !trailSettings.gradientColors || trailSettings.gradientColors.length < 2) {
+                return trailSettings.color;
+            }
+            
+            // 使用总生成点计数和渐变长度来计算颜色位置
+            // gradientLength 控制颜色循环的速度，值越大，颜色变化越慢
+            const normalizedPosition = (totalPointsGenerated / trailSettings.gradientLength) % 1;
+            
+            // 计算颜色索引
+            const colorIndex = Math.floor(normalizedPosition * (trailSettings.gradientColors.length - 1));
+            const nextColorIndex = Math.min(colorIndex + 1, trailSettings.gradientColors.length - 1);
+            
+            // 计算区间内的相对位置
+            let intervalPosition = (normalizedPosition * (trailSettings.gradientColors.length - 1)) - colorIndex;
+            
+            // 使用 gradientTransition 来调整过渡效果
+            // 0: 硬过渡，1: 平滑过渡
+            if (trailSettings.gradientTransition > 0) {
+                // 使用缓动函数调整过渡曲线
+                intervalPosition = easeInOutCubic(intervalPosition, trailSettings.gradientTransition);
+            }
+            
+            // 获取起始颜色和结束颜色
+            const startColor = hexToRgb(trailSettings.gradientColors[colorIndex]);
+            const endColor = hexToRgb(trailSettings.gradientColors[nextColorIndex]);
+            
+            // 线性插值计算当前颜色
+            const r = Math.round(startColor.r + (endColor.r - startColor.r) * intervalPosition);
+            const g = Math.round(startColor.g + (endColor.g - startColor.g) * intervalPosition);
+            const b = Math.round(startColor.b + (endColor.b - startColor.b) * intervalPosition);
+            
+            // 转换回十六进制格式
+            return rgbToHex(r, g, b);
+        }
+        
+        // 缓动函数，用于调整渐变过渡效果
+        function easeInOutCubic(t, transition) {
+            // transition 值越大，过渡越平滑
+            const smoothness = 1 + transition * 3;
+            return t < 0.5 
+                ? Math.pow(2 * t, smoothness) / 2 
+                : 1 - Math.pow(-2 * t + 2, smoothness) / 2;
+        }
         
         // 鼠标移动事件（整个窗口）
         document.addEventListener('mousemove', (e) => {
             const x = e.clientX;
             const y = e.clientY;
             
+            // 递增总生成点计数
+            totalPointsGenerated++;
+            
+            // 为当前点计算固定颜色
+            const pointColor = calculateFixedColor();
+            
             const currentPos = { 
                 x, 
                 y, 
-                createdAt: Date.now() // 记录点的生成时间
+                createdAt: Date.now(), // 记录点的生成时间
+                color: pointColor // 为当前点分配固定颜色
             };
             
             // 添加当前点
@@ -503,10 +880,16 @@
                     
                     // 添加中间点
                     for (let i = 1; i < steps; i++) {
+                        // 递增总生成点计数
+                        totalPointsGenerated++;
+                        
+                        // 为每个中间点也分配固定颜色
+                        const intermediateColor = calculateFixedColor();
                         mouseTrail.push({
                             x: lastMousePos.x + stepX * i,
                             y: lastMousePos.y + stepY * i,
-                            createdAt: Date.now()
+                            createdAt: Date.now(),
+                            color: intermediateColor // 为中间点分配固定颜色
                         });
                     }
                 }
@@ -570,7 +953,7 @@
             ctx.lineJoin = 'round';
             ctx.lineWidth = trailSettings.width; // 使用固定宽度，不随时间变化
             
-            // 遍历所有点，绘制从尾部到头部的渐变轨迹
+            // 遍历所有点，绘制从尾部到头部的轨迹
             for (let i = 0; i < sortedPoints.length - 1; i++) {
                 // 计算当前线段在轨迹中的位置比例（从尾部到头部）
                 // i = 0 是最老的点（尾部），i = sortedPoints.length - 2 是最新的点（头部）
@@ -582,14 +965,16 @@
                 // 跳过几乎透明的线段
                 if (alpha < 0.05) continue;
                 
+                // 使用轨迹点的固定颜色
+                const prev = sortedPoints[i];     // 前一个点（更靠近尾部）
+                const curr = sortedPoints[i + 1]; // 当前点（更靠近头部）
+                const segmentColor = curr.color || trailSettings.color;
+                
                 // 设置当前线段的样式
-                ctx.strokeStyle = `${trailSettings.color}${Math.floor(alpha * 255).toString(16).padStart(2, '0')}`;
+                ctx.strokeStyle = `${segmentColor}${Math.floor(alpha * 255).toString(16).padStart(2, '0')}`;
                 
                 // 绘制当前线段
                 ctx.beginPath();
-                
-                const prev = sortedPoints[i];     // 前一个点（更靠近尾部）
-                const curr = sortedPoints[i + 1]; // 当前点（更靠近头部）
                 
                 ctx.moveTo(prev.x, prev.y);
                 
@@ -614,6 +999,47 @@
             }
         }
         
+        // 根据渐变颜色数组和位置计算当前颜色
+        function getGradientColor(gradientColors, position) {
+            if (!gradientColors || gradientColors.length < 2) {
+                return gradientColors[0] || '#ff0000';
+            }
+            
+            // 计算当前位置落在哪个颜色区间
+            const colorIndex = Math.floor(position * (gradientColors.length - 1));
+            const nextColorIndex = Math.min(colorIndex + 1, gradientColors.length - 1);
+            
+            // 计算在当前区间内的相对位置
+            const intervalPosition = (position * (gradientColors.length - 1)) - colorIndex;
+            
+            // 获取起始颜色和结束颜色
+            const startColor = hexToRgb(gradientColors[colorIndex]);
+            const endColor = hexToRgb(gradientColors[nextColorIndex]);
+            
+            // 线性插值计算当前颜色
+            const r = Math.round(startColor.r + (endColor.r - startColor.r) * intervalPosition);
+            const g = Math.round(startColor.g + (endColor.g - startColor.g) * intervalPosition);
+            const b = Math.round(startColor.b + (endColor.b - startColor.b) * intervalPosition);
+            
+            // 转换回十六进制格式
+            return rgbToHex(r, g, b);
+        }
+        
+        // 十六进制颜色转RGB
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : { r: 255, g: 0, b: 0 };
+        }
+        
+        // RGB颜色转十六进制
+        function rgbToHex(r, g, b) {
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        }
+        
         // 更新当前颜色显示
         function updateColorDisplay() {
             currentColor.textContent = trailSettings.color;
@@ -623,16 +1049,23 @@
         function updateSettings() {
             trailSettings = {
                 enabled: trailEnabled.checked,
+                mode: document.querySelector('input[name="trailMode"]:checked').value,
                 width: parseInt(trailWidth.value),
                 opacity: parseFloat(trailOpacity.value),
                 fadeTime: parseInt(trailFadeTime.value),
-                color: trailColor.value
+                color: trailColor.value,
+                gradientColors: trailSettings.gradientColors || ['#ff0000', '#00ff00'],
+                preset: trailSettings.preset || 0,
+                gradientLength: parseInt(gradientLength.value),
+                gradientTransition: parseFloat(gradientTransition.value)
             };
             
             // 更新显示值
             trailWidthValue.textContent = trailSettings.width;
             trailOpacityValue.textContent = trailSettings.opacity;
             trailFadeTimeValue.textContent = trailSettings.fadeTime;
+            gradientLengthValue.textContent = trailSettings.gradientLength;
+            gradientTransitionValue.textContent = trailSettings.gradientTransition;
             updateColorDisplay();
             
             // 更新轨迹
@@ -645,12 +1078,195 @@
             ipcRenderer.send('toggle-trail', trailSettings.enabled);
         }
         
+        // 模式切换事件处理
+        function handleModeChange() {
+            const selectedMode = document.querySelector('input[name="trailMode"]:checked').value;
+            trailSettings.mode = selectedMode;
+            
+            // 显示对应的设置面板
+            singleColorSettings.style.display = selectedMode === 'single' ? 'block' : 'none';
+            gradientSettings.style.display = selectedMode === 'gradient' ? 'block' : 'none';
+            presetSettings.style.display = selectedMode === 'preset' ? 'block' : 'none';
+            
+            // 预设模式下禁用通用设置
+            const controls = commonSettings.querySelectorAll('input, label');
+            controls.forEach(control => {
+                if (control.tagName === 'INPUT') {
+                    control.disabled = selectedMode === 'preset';
+                }
+                control.style.opacity = selectedMode === 'preset' ? '0.6' : '1';
+            });
+            
+            // 直接发送当前配置，不需要重新生成，避免使用默认值
+            ipcRenderer.send('update-trail-config', trailSettings);
+            ipcRenderer.send('toggle-trail', trailSettings.enabled);
+            drawSmoothTrail();
+        }
+        
+        // 渐变颜色变化处理
+        function handleGradientColorChange() {
+            const colors = Array.from(document.querySelectorAll('.gradient-color'))
+                .filter(colorInput => {
+                    // 只包含可见的颜色输入
+                    return colorInput.closest('.gradient-color-item').style.display !== 'none';
+                })
+                .map(colorInput => colorInput.value);
+            
+            trailSettings.gradientColors = colors;
+            updateSettings();
+        }
+        
+        // 添加渐变颜色
+        function addGradientColor() {
+            const visibleColors = document.querySelectorAll('.gradient-color-item:not([style*="display: none"])');
+            const count = visibleColors.length;
+            
+            if (count < 4) {
+                if (count === 2) {
+                    gradientColor3.style.display = 'flex';
+                } else if (count === 3) {
+                    gradientColor4.style.display = 'flex';
+                }
+                
+                // 更新按钮状态
+                updateGradientButtons();
+                handleGradientColorChange();
+            }
+        }
+        
+        // 移除渐变颜色
+        function removeGradientColor(index = null) {
+            const visibleColors = document.querySelectorAll('.gradient-color-item:not([style*="display: none"])');
+            const count = visibleColors.length;
+            
+            if (count > 2) {
+                let elementToHide = null;
+                
+                if (index !== null && index >= 2) {
+                    // 如果指定了索引且索引大于等于2，根据索引隐藏对应元素
+                    if (index === 2) {
+                        elementToHide = gradientColor3;
+                    } else if (index === 3) {
+                        elementToHide = gradientColor4;
+                    }
+                } else {
+                    // 否则隐藏最后一个可见元素
+                    if (count === 4) {
+                        elementToHide = gradientColor4;
+                    } else if (count === 3) {
+                        elementToHide = gradientColor3;
+                    }
+                }
+                
+                if (elementToHide) {
+                    elementToHide.style.display = 'none';
+                    
+                    // 更新按钮状态
+                    updateGradientButtons();
+                    handleGradientColorChange();
+                }
+            }
+        }
+        
+        // 更新渐变按钮状态
+        function updateGradientButtons() {
+            const visibleColors = document.querySelectorAll('.gradient-color-item:not([style*="display: none"])');
+            const count = visibleColors.length;
+            
+            // 更新添加颜色按钮状态
+            addColorBtn.disabled = count >= 4;
+            
+            // 更新每个移除颜色按钮的状态
+            // 前两个颜色（必须保留）的移除按钮始终禁用
+            const removeButtons = document.querySelectorAll('.remove-color-btn');
+            removeButtons.forEach((btn, index) => {
+                // 索引为0和1的按钮始终禁用
+                btn.disabled = index < 2;
+            });
+        }
+        
         // 事件监听
         trailEnabled.addEventListener('change', updateSettings);
         trailWidth.addEventListener('input', updateSettings);
         trailOpacity.addEventListener('input', updateSettings);
         trailFadeTime.addEventListener('input', updateSettings);
         trailColor.addEventListener('input', updateSettings);
+        
+        // 渐变长度和过渡事件
+        gradientLength.addEventListener('input', updateSettings);
+        gradientTransition.addEventListener('input', updateSettings);
+        
+        // 模式切换事件
+        modeSingle.addEventListener('change', handleModeChange);
+        modeGradient.addEventListener('change', handleModeChange);
+        modePreset.addEventListener('change', handleModeChange);
+        
+        // 渐变颜色事件
+        document.querySelectorAll('.gradient-color').forEach(colorInput => {
+            colorInput.addEventListener('input', handleGradientColorChange);
+        });
+        
+        // 渐变控制按钮事件
+        addColorBtn.addEventListener('click', addGradientColor);
+        
+        // 为每个移除颜色按钮添加事件监听器
+        document.querySelectorAll('.remove-color-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const index = parseInt(e.target.dataset.index);
+                removeGradientColor(index);
+            });
+        });
+        
+        // 加载保存的配置
+        ipcRenderer.on('load-config', (event, config) => {
+            // 更新轨迹设置
+            trailSettings = config;
+            
+            // 更新UI元素
+            trailEnabled.checked = config.enabled;
+            trailWidth.value = config.width;
+            trailOpacity.value = config.opacity;
+            trailFadeTime.value = config.fadeTime;
+            trailColor.value = config.color;
+            gradientLength.value = config.gradientLength || 100;
+            gradientTransition.value = config.gradientTransition || 0.5;
+            
+            // 更新显示值
+            trailWidthValue.textContent = config.width;
+            trailOpacityValue.textContent = config.opacity;
+            trailFadeTimeValue.textContent = config.fadeTime;
+            gradientLengthValue.textContent = config.gradientLength || 100;
+            gradientTransitionValue.textContent = config.gradientTransition || 0.5;
+            updateColorDisplay();
+            
+            // 更新渐变颜色
+            if (config.gradientColors) {
+                trailSettings.gradientColors = config.gradientColors;
+                
+                // 更新渐变颜色输入框
+                const colorInputs = document.querySelectorAll('.gradient-color');
+                colorInputs.forEach((input, index) => {
+                    if (config.gradientColors[index]) {
+                        input.value = config.gradientColors[index];
+                        // 显示对应的颜色输入框
+                        const parent = input.closest('.gradient-color-item');
+                        if (parent) {
+                            parent.style.display = 'flex';
+                        }
+                    }
+                });
+                
+                // 更新按钮状态
+                updateGradientButtons();
+            }
+            
+            // 更新模式
+            document.querySelector(`input[name="trailMode"][value="${config.mode}"]`).checked = true;
+            handleModeChange();
+            
+            // 更新轨迹
+            drawSmoothTrail();
+        });
         
         // 窗口控制按钮事件
         minimizeBtn.addEventListener('click', () => {
@@ -662,6 +1278,7 @@
         });
         
         // 初始化设置
+        updateGradientButtons();
         updateSettings();
     </script>
 </body>
