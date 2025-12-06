@@ -1,5 +1,5 @@
 {
-  "name": "mouse-trail-app",
+  "name": "curove",
   "version": "1.0.0",
   "description": "A desktop app that adds mouse trail effects globally",
   "main": "main.cjs",
@@ -21,5 +21,20 @@
   },
   "dependencies": {
     "electron-store": "^11.0.2"
+  },
+  "build": {
+    "productName": "Curove",
+    "win": {
+      "artifactName": "Curove-install-${version}.${ext}",
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "runAfterFinish": false
+    }
   }
 }

@@ -95,7 +95,7 @@ function createTray() {
   ]);
   
   // 设置托盘提示文本
-  tray.setToolTip('鼠标轨迹应用');
+  tray.setToolTip('Curove');
   
   // 设置托盘菜单
   tray.setContextMenu(contextMenu);
