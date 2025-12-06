@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鼠标轨迹应用</title>
+    <style>
+        /* 现代化样式重置和基础设置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: white;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            color: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow: hidden;
+            background: #ffffff;
+            color: #333;
+        }
+        
+        .container {
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 全屏canvas轨迹 - 置于顶层 */
+        #mainCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* 允许鼠标事件穿透到下层元素 */
+            z-index: 9999; /* 最高层级，确保显示在所有元素之上 */
+        }
+        
+        /* 内容区域层级设置 */
+        .header,
+        .content {
+            position: relative;
+            z-index: 1; /* 内容区域位于底层，轨迹在顶层 */
+        }
+        
+        .header {
+            background: transparent;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            -webkit-app-region: drag;
+        }
+        
+        /* 窗口控制按钮 */
+        .window-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+        }
+        
+        .window-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            padding: 0;
+            -webkit-app-region: no-drag;
+        }
+        
+        .window-btn.minimize {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .window-btn.close {
+            background: rgba(255, 82, 82, 0.8);
+            color: white;
+        }
+        
+        .window-btn:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .window-btn.close:hover {
+            background: rgba(255, 82, 82, 1);
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .content {
+            padding: 0 24px 24px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px 30px 0 0;
+            height: calc(100% - 80px);
+            overflow-y: auto;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        /* 隐藏滚动条 */
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+            padding: 0;
+        }
+        
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .control-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        /* 自定义滑块样式 */
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            margin: 8px 0;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+        }
+        
+        input[type="range"]::-moz-range-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* 开关样式 */
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .toggle-item:last-child {
+            border-bottom: none;
+        }
+        
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+        }
+        
+        /* 美化的开关按钮 */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 28px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        input:checked + .toggle-slider {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        input:focus + .toggle-slider {
+            box-shadow: 0 0 1px rgba(102, 126, 234, 0.5);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+        
+        /* 颜色选择器样式 */
+        .color-picker-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        input[type="color"] {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: transparent;
+            padding: 2px;
+            overflow: hidden;
+        }
+        
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* 实时预览区域 */
+        .preview-area {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .preview-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 12px;
+        }
+        
+        #previewCanvas {
+            width: 100%;
+            height: 150px;
+            border-radius: 6px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            cursor: crosshair;
+        }
+        
+        /* 数值显示 */
+        .value-display {
+            float: right;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        /* 按钮样式 */
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 28px;
+        }
+        
+        button {
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        button#minimizeWindow {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        button#minimizeWindow:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+        
+        button#quitApp {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+        
+        button#quitApp:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 全屏轨迹canvas -->
+        <canvas id="mainCanvas"></canvas>
+        
+        <div class="header">
+            <h1>鼠标轨迹应用</h1>
+            <div class="window-controls">
+                <button class="window-btn minimize" id="minimizeBtn">—</button>
+                <button class="window-btn close" id="closeBtn">×</button>
+            </div>
+        </div>
+        
+        <div class="content">
+        <div class="control-group toggle-item">
+            <span class="toggle-label">启用鼠标轨迹</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="trailEnabled" checked>
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label">
+                轨迹宽度 <span class="value-display" id="trailWidthValue">5</span>
+            </label>
+            <input type="range" id="trailWidth" min="1" max="20" value="5">
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label">
+                轨迹透明度 <span class="value-display" id="trailOpacityValue">0.8</span>
+            </label>
+            <input type="range" id="trailOpacity" min="0.1" max="1" step="0.1" value="0.8">
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label">
+                停留时间 <span class="value-display" id="trailFadeTimeValue">1000</span>ms
+            </label>
+            <input type="range" id="trailFadeTime" min="200" max="3000" step="100" value="1000">
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label">轨迹颜色</label>
+            <div class="color-picker-container">
+                <input type="color" id="trailColor" value="#ff0000">
+                <span id="currentColor">#ff0000</span>
+            </div>
+        </div>
+        
+    </div>
+</div>
+    
+    <script>
+        const { ipcRenderer, remote } = require('electron');
+        
+        // 获取DOM元素
+        const trailEnabled = document.getElementById('trailEnabled');
+        const trailWidth = document.getElementById('trailWidth');
+        const trailWidthValue = document.getElementById('trailWidthValue');
+        const trailOpacity = document.getElementById('trailOpacity');
+        const trailOpacityValue = document.getElementById('trailOpacityValue');
+        const trailFadeTime = document.getElementById('trailFadeTime');
+        const trailFadeTimeValue = document.getElementById('trailFadeTimeValue');
+        const trailColor = document.getElementById('trailColor');
+        const minimizeBtn = document.getElementById('minimizeBtn');
+        const closeBtn = document.getElementById('closeBtn');
+        const currentColor = document.getElementById('currentColor');
+        
+        // 轨迹设置
+        let trailSettings = {
+            enabled: true,
+            width: 5,
+            opacity: 0.8,
+            fadeTime: 1000, // 停留时间（毫秒）
+            color: '#ff0000'
+        };
+        
+        // 获取主canvas元素
+        const mainCanvas = document.getElementById('mainCanvas');
+        const ctx = mainCanvas.getContext('2d');
+        
+        // 设置canvas实际宽高（与显示宽高一致）
+        function resizeCanvas() {
+            const rect = mainCanvas.getBoundingClientRect();
+            mainCanvas.width = rect.width * window.devicePixelRatio;
+            mainCanvas.height = rect.height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        }
+        
+        // 初始化canvas
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 鼠标轨迹点数组
+        let mouseTrail = [];
+        let animationFrameId = null;
+        let lastMouseMoveTime = 0;
+        
+        // 上一个鼠标位置
+        let lastMousePos = null;
+        
+        // 鼠标移动事件（整个窗口）
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            
+            const currentPos = { 
+                x, 
+                y, 
+                createdAt: Date.now() // 记录点的生成时间
+            };
+            
+            // 添加当前点
+            mouseTrail.push(currentPos);
+            
+            // 如果有上一个位置，且距离较远，添加中间点以确保轨迹连续
+            if (lastMousePos) {
+                const dx = currentPos.x - lastMousePos.x;
+                const dy = currentPos.y - lastMousePos.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                // 如果距离大于10像素，添加中间点
+                const maxDistance = 10;
+                if (distance > maxDistance) {
+                    const steps = Math.ceil(distance / maxDistance);
+                    const stepX = dx / steps;
+                    const stepY = dy / steps;
+                    
+                    // 添加中间点
+                    for (let i = 1; i < steps; i++) {
+                        mouseTrail.push({
+                            x: lastMousePos.x + stepX * i,
+                            y: lastMousePos.y + stepY * i,
+                            createdAt: Date.now()
+                        });
+                    }
+                }
+            }
+            
+            // 更新上一个位置
+            lastMousePos = currentPos;
+        });
+        
+        // 连续动画循环，持续更新轨迹
+        function animateTrail() {
+            cleanupOldPoints();
+            drawSmoothTrail();
+            requestAnimationFrame(animateTrail);
+        }
+        
+        // 定期清理过期的轨迹点
+        // 实现固定速度淡化：同样长的时间内只能淡化同样长度的轨迹，不受鼠标移动速度影响
+        function cleanupOldPoints() {
+            const timeInterval = 50; // 清理间隔（毫秒）
+            
+            // 计算淡化速度：根据用户设置的停留时间，确保轨迹在设定时间内完全淡化
+            // 使用当前轨迹点数量和停留时间计算每秒应淡化的点数
+            const fadeSpeed = mouseTrail.length / (trailSettings.fadeTime / 1000);
+            
+            // 计算在当前时间间隔内应该淡化的点数量
+            const pointsToRemove = Math.max(1, Math.floor(fadeSpeed * timeInterval / 1000));
+            
+            // 如果有足够的点，按固定速度移除最老的点
+            if (mouseTrail.length > pointsToRemove) {
+                // 按创建时间排序，确保最老的点在前面
+                mouseTrail.sort((a, b) => a.createdAt - b.createdAt);
+                // 移除最老的点
+                mouseTrail = mouseTrail.slice(pointsToRemove);
+            } else if (mouseTrail.length > 0) {
+                // 如果点数不足，清空所有点
+                mouseTrail = [];
+            }
+        }
+        
+        // 启动动画循环
+        animateTrail();
+        
+        // 平滑绘制轨迹（使用贝塞尔曲线）
+        function drawSmoothTrail() {
+            // 清空画布
+            ctx.clearRect(0, 0, mainCanvas.width / window.devicePixelRatio, mainCanvas.height / window.devicePixelRatio);
+            
+            if (!trailSettings.enabled || mouseTrail.length < 2) {
+                return;
+            }
+            
+            // 按创建时间排序轨迹点，确保顺序正确（最早的点在前面，最新的点在后面）
+            const sortedPoints = [...mouseTrail].sort((a, b) => a.createdAt - b.createdAt);
+            
+            if (sortedPoints.length < 2) {
+                return;
+            }
+            
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = trailSettings.width; // 使用固定宽度，不随时间变化
+            
+            // 遍历所有点，绘制从尾部到头部的渐变轨迹
+            for (let i = 0; i < sortedPoints.length - 1; i++) {
+                // 计算当前线段在轨迹中的位置比例（从尾部到头部）
+                // i = 0 是最老的点（尾部），i = sortedPoints.length - 2 是最新的点（头部）
+                const trailProgress = i / (sortedPoints.length - 1);
+                
+                // 计算当前线段的透明度：尾部完全透明，头部完全不透明
+                const alpha = trailSettings.opacity * trailProgress;
+                
+                // 跳过几乎透明的线段
+                if (alpha < 0.05) continue;
+                
+                // 设置当前线段的样式
+                ctx.strokeStyle = `${trailSettings.color}${Math.floor(alpha * 255).toString(16).padStart(2, '0')}`;
+                
+                // 绘制当前线段
+                ctx.beginPath();
+                
+                const prev = sortedPoints[i];     // 前一个点（更靠近尾部）
+                const curr = sortedPoints[i + 1]; // 当前点（更靠近头部）
+                
+                ctx.moveTo(prev.x, prev.y);
+                
+                if (i < sortedPoints.length - 2) {
+                    // 不是最后一个线段，使用贝塞尔曲线
+                    const next = sortedPoints[i + 2];
+                    
+                    // 计算控制点，实现平滑曲线
+                    const tension = 0.5;
+                    const cp1x = curr.x - (next.x - prev.x) * tension;
+                    const cp1y = curr.y - (next.y - prev.y) * tension;
+                    const cp2x = curr.x + (next.x - prev.x) * tension;
+                    const cp2y = curr.y + (next.y - prev.y) * tension;
+                    
+                    ctx.bezierCurveTo(curr.x, curr.y, cp2x, cp2y, next.x, next.y);
+                } else {
+                    // 最后一个线段，直接连线
+                    ctx.lineTo(curr.x, curr.y);
+                }
+                
+                ctx.stroke();
+            }
+        }
+        
+        // 更新当前颜色显示
+        function updateColorDisplay() {
+            currentColor.textContent = trailSettings.color;
+        }
+        
+        // 更新轨迹设置
+        function updateSettings() {
+            trailSettings = {
+                enabled: trailEnabled.checked,
+                width: parseInt(trailWidth.value),
+                opacity: parseFloat(trailOpacity.value),
+                fadeTime: parseInt(trailFadeTime.value),
+                color: trailColor.value
+            };
+            
+            // 更新显示值
+            trailWidthValue.textContent = trailSettings.width;
+            trailOpacityValue.textContent = trailSettings.opacity;
+            trailFadeTimeValue.textContent = trailSettings.fadeTime;
+            updateColorDisplay();
+            
+            // 更新轨迹
+            drawSmoothTrail();
+            
+            // 发送配置到主进程
+            ipcRenderer.send('update-trail-config', trailSettings);
+            
+            // 发送开关状态到主进程
+            ipcRenderer.send('toggle-trail', trailSettings.enabled);
+        }
+        
+        // 事件监听
+        trailEnabled.addEventListener('change', updateSettings);
+        trailWidth.addEventListener('input', updateSettings);
+        trailOpacity.addEventListener('input', updateSettings);
+        trailFadeTime.addEventListener('input', updateSettings);
+        trailColor.addEventListener('input', updateSettings);
+        
+        // 窗口控制按钮事件
+        minimizeBtn.addEventListener('click', () => {
+            ipcRenderer.send('minimize-window');
+        });
+        
+        closeBtn.addEventListener('click', () => {
+            ipcRenderer.send('close-window');
+        });
+        
+        // 初始化设置
+        updateSettings();
+    </script>
+</body>
+</html>

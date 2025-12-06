@@ -1,0 +1,17 @@
+{
+  "name": "mouse-trail-app",
+  "version": "1.0.0",
+  "description": "A desktop app that adds mouse trail effects globally",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "keywords": ["electron", "mouse", "trail", "cursor"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.0.0"
+  }
+}
