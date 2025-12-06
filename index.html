@@ -5,39 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>鼠标轨迹应用</title>
     <style>
-        /* 现代化样式重置和基础设置 */
+        /* 拟态风格基础设置 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
         
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: white;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            color: #333;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* 拟态风格核心变量 */
+        :root {
+            --bg-color: #e0e0e0;
+            --text-color: #555;
+            --shadow-light: #ffffff;
+            --shadow-dark: #bebebe;
+            --border-radius: 12px;
         }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-color);
+            margin: 0;
+            padding: 0;
             overflow: hidden;
-            background: #ffffff;
-            color: #333;
+            color: var(--text-color);
         }
         
         .container {
             width: 100%;
             height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-color);
             position: relative;
             overflow: hidden;
         }
@@ -61,15 +57,15 @@
         }
         
         .header {
-            background: transparent;
-            color: white;
+            background: var(--bg-color);
+            color: var(--text-color);
             padding: 20px;
             text-align: center;
             position: relative;
             -webkit-app-region: drag;
         }
         
-        /* 窗口控制按钮 */
+        /* 窗口控制按钮 - 拟态风格 */
         .window-controls {
             position: absolute;
             top: 10px;
@@ -92,36 +88,34 @@
             transition: all 0.2s ease;
             padding: 0;
             -webkit-app-region: no-drag;
+            background: var(--bg-color);
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+            color: var(--text-color);
         }
         
-        .window-btn.minimize {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
+        .window-btn.minimize:hover {
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
         }
         
         .window-btn.close {
-            background: rgba(255, 82, 82, 0.8);
-            color: white;
-        }
-        
-        .window-btn:hover {
-            transform: scale(1.1);
-            background: rgba(255, 255, 255, 0.3);
+            color: #ff5252;
         }
         
         .window-btn.close:hover {
-            background: rgba(255, 82, 82, 1);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
         }
         
         h1 {
             font-size: 24px;
             font-weight: 600;
             margin: 0;
+            color: var(--text-color);
         }
         
+        /* 内容区域 - 拟态风格 */
         .content {
             padding: 0 24px 24px;
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--bg-color);
             border-radius: 30px 30px 0 0;
             height: calc(100% - 80px);
             overflow-y: auto;
@@ -134,9 +128,13 @@
             display: none;
         }
         
+        /* 控制组 - 拟态风格 */
         .control-group {
             margin-bottom: 20px;
-            padding: 0;
+            padding: 16px;
+            background: var(--bg-color);
+            border-radius: var(--border-radius);
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
         }
         
         .control-group:last-child {
@@ -146,78 +144,80 @@
         .control-label {
             display: block;
             margin-bottom: 8px;
-            color: #555;
+            color: var(--text-color);
             font-weight: 500;
             font-size: 14px;
         }
         
-        /* 自定义滑块样式 */
+        /* 自定义滑块样式 - 拟态风格 */
         input[type="range"] {
             width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--bg-color);
             outline: none;
             appearance: none;
             -webkit-appearance: none;
-            margin: 8px 0;
+            margin: 12px 0;
+            box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
         }
         
         input[type="range"]::-webkit-slider-thumb {
             appearance: none;
             -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-color);
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
             transition: all 0.2s ease;
         }
         
         input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
         }
         
         input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-color);
             cursor: pointer;
             border: none;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
             transition: all 0.2s ease;
         }
         
         input[type="range"]::-moz-range-thumb:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
         }
         
-        /* 开关样式 */
+        /* 开关样式 - 拟态风格 */
         .toggle-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 0;
-            border-bottom: 1px solid #f0f0f0;
+            padding: 16px;
+            background: var(--bg-color);
+            border-radius: var(--border-radius);
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+            margin-bottom: 20px;
         }
         
         .toggle-item:last-child {
-            border-bottom: none;
+            margin-bottom: 0;
         }
         
         .toggle-label {
             display: flex;
             align-items: center;
             font-weight: 500;
-            color: #333;
+            color: var(--text-color);
             cursor: pointer;
         }
         
-        /* 美化的开关按钮 */
+        /* 拟态风格的开关按钮 */
         .toggle-switch {
             position: relative;
             display: inline-block;
@@ -238,9 +238,10 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ccc;
+            background: var(--bg-color);
             transition: .3s;
             border-radius: 28px;
+            box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
         }
         
         .toggle-slider:before {
@@ -250,25 +251,27 @@
             width: 20px;
             left: 4px;
             bottom: 4px;
-            background-color: white;
+            background: var(--bg-color);
             transition: .3s;
             border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
         }
         
         input:checked + .toggle-slider {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-color);
+            box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
         }
         
         input:focus + .toggle-slider {
-            box-shadow: 0 0 1px rgba(102, 126, 234, 0.5);
+            box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
         }
         
         input:checked + .toggle-slider:before {
             transform: translateX(24px);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
         }
         
-        /* 颜色选择器样式 */
+        /* 颜色选择器样式 - 拟态风格 */
         .color-picker-container {
             display: flex;
             align-items: center;
@@ -276,14 +279,15 @@
         }
         
         input[type="color"] {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
-            background: transparent;
-            padding: 2px;
+            background: var(--bg-color);
+            padding: 4px;
             overflow: hidden;
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
         }
         
         input[type="color"]::-webkit-color-swatch-wrapper {
@@ -292,47 +296,48 @@
         
         input[type="color"]::-webkit-color-swatch {
             border: none;
-            border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            box-shadow: 2px 2px 5px var(--shadow-dark), -2px -2px 5px var(--shadow-light);
         }
         
-        /* 模式选择器样式 */
+        /* 模式选择器样式 - 拟态风格 */
         .mode-selector {
             display: flex;
-            gap: 8px;
-            margin-top: 8px;
+            gap: 12px;
+            margin-top: 12px;
         }
         
         .mode-option {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 8px;
-            background: #f0f0f0;
+            padding: 10px 16px;
+            border-radius: 10px;
+            background: var(--bg-color);
             transition: all 0.2s ease;
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
         }
         
         .mode-option:hover {
-            background: #e0e0e0;
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
         }
         
         .mode-option input[type="radio"] {
-            accent-color: #667eea;
+            accent-color: var(--text-color);
         }
         
         .mode-option input[type="radio"]:checked + span {
             font-weight: 600;
-            color: #667eea;
+            color: var(--text-color);
         }
         
-        /* 渐变颜色选择器样式 */
+        /* 渐变颜色选择器样式 - 拟态风格 */
         .gradient-colors {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 8px;
+            gap: 16px;
+            margin-top: 12px;
         }
         
         .gradient-color-item {
@@ -344,52 +349,51 @@
             width: 100%;
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px;
-            background: #f8f9fa;
-            border-radius: 8px;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-color);
+            border-radius: 10px;
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
         }
         
         .color-block input[type="color"] {
             width: 40px;
             height: 40px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            background: transparent;
+            background: var(--bg-color);
             padding: 2px;
             overflow: hidden;
         }
         
-        .color-block input[type="color"]::-webkit-color-swatch-wrapper {
-            padding: 0;
+        /* 渐变颜色控制按钮 - 拟态风格 */
+        #addColorBtnWrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .color-block input[type="color"]::-webkit-color-swatch {
-            border: none;
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-        
-        /* 渐变颜色控制按钮 */
         #addColorBtn {
             width: 40px;
             height: 40px;
             padding: 0;
-            font-size: 20px;
+            font-size: 24px;
             line-height: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: var(--bg-color);
+            color: var(--text-color);
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+            border: none;
         }
         
         #addColorBtn:hover {
-            opacity: 0.9;
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
         }
         
         #addColorBtn:disabled {
@@ -397,131 +401,15 @@
             cursor: not-allowed;
         }
         
-        .remove-color-btn {
-            width: 28px;
-            height: 28px;
-            padding: 0;
-            font-size: 14px;
-            line-height: 1;
+        /* Header样式调整 */
+        .header {
             display: flex;
             align-items: center;
-            justify-content: center;
-            background: rgba(255, 82, 82, 0.8);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            justify-content: space-between;
         }
         
-        .remove-color-btn:hover {
-            background: rgba(255, 82, 82, 1);
-        }
-        
-        .remove-color-btn:disabled {
-            background: rgba(200, 200, 200, 0.8);
-            cursor: not-allowed;
-        }
-        
-
-        
-        /* 预设模板样式 */
-        .preset-templates {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 16px;
-            margin-top: 12px;
-        }
-        
-        .preset-template {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            padding: 12px;
-            border-radius: 8px;
-            background: #f0f0f0;
-            transition: all 0.2s ease;
-        }
-        
-        .preset-template:hover {
-            background: #e0e0e0;
-            transform: translateY(-2px);
-        }
-        
-        .preset-preview {
-            width: 80px;
-            height: 40px;
-            border-radius: 6px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        /* 实时预览区域 */
-        .preview-area {
-            margin-top: 20px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .preview-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #666;
-            margin-bottom: 12px;
-        }
-        
-        #previewCanvas {
-            width: 100%;
-            height: 150px;
-            border-radius: 6px;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            cursor: crosshair;
-        }
-        
-        /* 数值显示 */
-        .value-display {
-            float: right;
-            color: #667eea;
-            font-weight: 600;
-            font-size: 14px;
-        }
-        
-        /* 按钮样式 */
-        .buttons-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 28px;
-        }
-        
-        button {
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        /* 渐变颜色控制按钮 */
-        #addColorBtn {
-            width: 40px;
-            height: 40px;
-            padding: 0;
-            font-size: 20px;
-            line-height: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        .header-toggle {
+            margin: 0 16px;
         }
         
         .remove-color-btn {
@@ -533,43 +421,302 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 82, 82, 0.8);
-            color: white;
-            border-radius: 6px;
+            background: var(--bg-color);
+            color: #ff5252;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
         }
         
         .remove-color-btn:hover {
-            background: rgba(255, 82, 82, 1);
-            transform: scale(1.1);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
         }
         
         .remove-color-btn:disabled {
-            background: rgba(200, 200, 200, 0.8);
+            opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
+        }
+        
+        /* 预设模板样式 - 拟态风格 */
+        .preset-templates {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 16px;
+            margin-top: 12px;
+        }
+        
+        .preset-template {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 16px;
+            border-radius: 10px;
+            background: var(--bg-color);
+            transition: all 0.2s ease;
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+        }
+        
+        .preset-template:hover {
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+        }
+        
+        .preset-preview {
+            width: 80px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--bg-color);
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+        }
+        
+        /* 实时预览区域 - 拟态风格 */
+        .preview-area {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--bg-color);
+            border-radius: var(--border-radius);
+            text-align: center;
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+        }
+        
+        .preview-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 12px;
+        }
+        
+        #previewCanvas {
+            width: 100%;
+            height: 150px;
+            border-radius: 10px;
+            background: var(--bg-color);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+            cursor: crosshair;
+        }
+        
+        /* 数值显示 */
+        .value-display {
+            float: right;
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        /* 按钮样式 - 拟态风格 */
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 28px;
+        }
+        
+        button {
+            padding: 14px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
         }
         
         button#minimizeWindow {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: var(--bg-color);
+            color: var(--text-color);
         }
         
         button#minimizeWindow:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
         }
         
         button#quitApp {
-            background: #f8f9fa;
-            color: #6c757d;
-            border: 1px solid #dee2e6;
+            background: var(--bg-color);
+            color: var(--text-color);
         }
         
         button#quitApp:hover {
-            background: #e9ecef;
-            transform: translateY(-1px);
+            background: var(--bg-color);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+        }
+        
+        .parameter-container {
+            margin-top: 16px;
+        }
+        
+        /* 改进的开关样式，增强可见性 */
+        .toggle-switch input:checked + .toggle-slider {
+            background: var(--bg-color);
+            box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light), inset 0 0 0 14px rgba(76, 175, 80, 0.7);
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background: var(--bg-color);
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+            background: #4CAF50;
+        }
+        
+        /* 拟态风格自定义下拉选择框 */
+        .custom-select {
+            position: relative;
+            width: 100%;
+        }
+        
+        .custom-select select {
+            width: 100%;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            border: none;
+            background: var(--bg-color);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+            color: var(--text-color);
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='292.4' height='292.4'%3E%3Cpath fill='%23555555' d='M287 69.4a17.6 17.6 0 0 0-13-5.4H18.4c-5 0-9.3 1.8-12.9 5.4A17.6 17.6 0 0 0 0 82.2c0 5 1.8 9.3 5.4 12.9l128 127.9c3.6 3.6 7.8 5.4 12.8 5.4s9.2-1.8 12.8-5.4L287 95c3.5-3.5 5.4-7.8 5.4-12.8 0-5-1.9-9.2-5.5-12.8z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 12px;
+        }
+        
+        .custom-select select:hover {
+            box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+        }
+        
+        .custom-select select:focus {
+            box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light), 0 0 0 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 由于浏览器限制，option元素样式有限制，我们使用自定义样式来尽量匹配拟态风格 */
+        .custom-select select option {
+            background-color: var(--bg-color) !important;
+            color: var(--text-color) !important;
+            padding: 12px !important;
+            margin: 2px 0 !important;
+            border-radius: var(--border-radius) !important;
+            outline: none !important;
+        }
+        
+        /* WebKit浏览器特定样式 */
+        @-moz-document url-prefix() {
+            .custom-select select option {
+                background-color: var(--bg-color) !important;
+                color: var(--text-color) !important;
+            }
+        }
+        
+        /* 移除默认的下拉箭头样式 */
+        select::-ms-expand {
+            display: none;
+        }
+        
+        /* 自定义下拉框容器，用于完全控制样式 */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+            margin-top: 8px;
+        }
+        
+        .dropdown-selected {
+            padding: 12px;
+            border-radius: var(--border-radius);
+            background: var(--bg-color);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+            color: var(--text-color);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .dropdown-selected:hover {
+            box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+        }
+        
+        .dropdown-arrow {
+            width: 12px;
+            height: 12px;
+            transition: transform 0.2s ease;
+        }
+        
+        .dropdown-arrow.open {
+            transform: rotate(180deg);
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 8px;
+            background: var(--bg-color);
+            border-radius: var(--border-radius);
+            box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .dropdown-menu.open {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 12px 16px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: var(--border-radius);
+            margin: 4px;
+        }
+        
+        .dropdown-item:hover {
+            background: var(--bg-color);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+        }
+        
+        .dropdown-item.selected {
+            background: var(--bg-color);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+            font-weight: 600;
+        }
+        
+        /* 模式设置面板 */
+        .mode-settings {
+            margin-top: 16px;
+        }
+        
+        /* 当前颜色显示 */
+        #currentColor {
+            color: var(--text-color);
         }
     </style>
 </head>
@@ -579,7 +726,13 @@
         <canvas id="mainCanvas"></canvas>
         
         <div class="header">
-            <h1>鼠标轨迹应用</h1>
+            <h1>Curove</h1>
+            <div class="toggle-item header-toggle" style="margin-bottom: 0; box-shadow: none; -webkit-app-region: no-drag;">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="trailEnabled" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
             <div class="window-controls">
                 <button class="window-btn minimize" id="minimizeBtn">—</button>
                 <button class="window-btn close" id="closeBtn">×</button>
@@ -587,13 +740,6 @@
         </div>
         
         <div class="content">
-        <div class="control-group toggle-item">
-            <span class="toggle-label">启用鼠标轨迹</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="trailEnabled" checked>
-                <span class="toggle-slider"></span>
-            </label>
-        </div>
         
         <!-- 路径模式切换 -->
         <div class="control-group">
@@ -622,6 +768,24 @@
                     <input type="color" id="trailColor" value="#ff0000">
                     <span id="currentColor">#ff0000</span>
                 </div>
+            </div>
+            
+            <!-- 通用设置 -->
+            <div class="control-group parameter-container">
+                <label class="control-label">
+                    轨迹宽度 <span class="value-display" id="trailWidthValue">5</span>
+                </label>
+                <input type="range" id="trailWidth" min="1" max="20" value="5">
+                
+                <label class="control-label" style="margin-top: 16px;">
+                    轨迹透明度 <span class="value-display" id="trailOpacityValue">0.8</span>
+                </label>
+                <input type="range" id="trailOpacity" min="0.1" max="1" step="0.1" value="0.8">
+                
+                <label class="control-label" style="margin-top: 16px;">
+                    停留时间 <span class="value-display" id="trailFadeTimeValue">1000</span>ms
+                </label>
+                <input type="range" id="trailFadeTime" min="200" max="3000" step="100" value="1000">
             </div>
         </div>
         
@@ -654,22 +818,40 @@
                             <button class="remove-color-btn" data-index="3">×</button>
                         </div>
                     </div>
+                    <div class="gradient-color-item">
+                        <div class="color-block" id="addColorBtnWrapper">
+                            <button id="addColorBtn" title="添加颜色">+</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="control-group">
-                <button id="addColorBtn" title="添加颜色">+</button>
-            </div>
-            <div class="control-group">
+            
+            <!-- 参数设置容器 -->
+            <div class="control-group parameter-container">
                 <label class="control-label">
                     渐变长度 <span class="value-display" id="gradientLengthValue">100</span>
                 </label>
                 <input type="range" id="gradientLength" min="20" max="500" step="10" value="100">
-            </div>
-            <div class="control-group">
-                <label class="control-label">
+                
+                <label class="control-label" style="margin-top: 16px;">
                     渐变过渡程度 <span class="value-display" id="gradientTransitionValue">0.5</span>
                 </label>
                 <input type="range" id="gradientTransition" min="0" max="1" step="0.1" value="0.5">
+                
+                <label class="control-label" style="margin-top: 16px;">
+                    轨迹宽度 <span class="value-display" id="trailWidthValue">5</span>
+                </label>
+                <input type="range" id="trailWidth" min="1" max="20" value="5">
+                
+                <label class="control-label" style="margin-top: 16px;">
+                    轨迹透明度 <span class="value-display" id="trailOpacityValue">0.8</span>
+                </label>
+                <input type="range" id="trailOpacity" min="0.1" max="1" step="0.1" value="0.8">
+                
+                <label class="control-label" style="margin-top: 16px;">
+                    停留时间 <span class="value-display" id="trailFadeTimeValue">1000</span>ms
+                </label>
+                <input type="range" id="trailFadeTime" min="200" max="3000" step="100" value="1000">
             </div>
         </div>
         
@@ -677,45 +859,23 @@
         <div id="presetSettings" class="mode-settings" style="display: none;">
             <div class="control-group">
                 <label class="control-label">预设模板</label>
-                <div class="preset-templates">
-                    <!-- 预设模板占位 -->
-                    <div class="preset-template">
-                        <div class="preset-preview"></div>
-                        <span>模板 1</span>
+                <div class="custom-dropdown" id="presetDropdown">
+                    <div class="dropdown-selected" id="dropdownSelected">
+                        <span id="selectedPresetText">模板 1</span>
+                        <svg class="dropdown-arrow" id="dropdownArrow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 9L12 15L18 9" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
                     </div>
-                    <div class="preset-template">
-                        <div class="preset-preview"></div>
-                        <span>模板 2</span>
-                    </div>
-                    <div class="preset-template">
-                        <div class="preset-preview"></div>
-                        <span>模板 3</span>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <div class="dropdown-item" data-value="0" id="presetItem0" class="selected">模板 1</div>
+                        <div class="dropdown-item" data-value="1" id="presetItem1">模板 2</div>
+                        <div class="dropdown-item" data-value="2" id="presetItem2">模板 3</div>
+                        <div class="dropdown-item" data-value="3" id="presetItem3">模板 4</div>
+                        <div class="dropdown-item" data-value="4" id="presetItem4">模板 5</div>
                     </div>
                 </div>
-            </div>
-        </div>
-        
-        <!-- 通用设置（预设模式下禁用） -->
-        <div id="commonSettings">
-            <div class="control-group">
-                <label class="control-label">
-                    轨迹宽度 <span class="value-display" id="trailWidthValue">5</span>
-                </label>
-                <input type="range" id="trailWidth" min="1" max="20" value="5">
-            </div>
-            
-            <div class="control-group">
-                <label class="control-label">
-                    轨迹透明度 <span class="value-display" id="trailOpacityValue">0.8</span>
-                </label>
-                <input type="range" id="trailOpacity" min="0.1" max="1" step="0.1" value="0.8">
-            </div>
-            
-            <div class="control-group">
-                <label class="control-label">
-                    停留时间 <span class="value-display" id="trailFadeTimeValue">1000</span>ms
-                </label>
-                <input type="range" id="trailFadeTime" min="200" max="3000" step="100" value="1000">
+                <!-- 隐藏的select用于保存实际值 -->
+                <input type="hidden" id="presetSelect" value="0">
             </div>
         </div>
         
@@ -751,7 +911,7 @@
         const singleColorSettings = document.getElementById('singleColorSettings');
         const gradientSettings = document.getElementById('gradientSettings');
         const presetSettings = document.getElementById('presetSettings');
-        const commonSettings = document.getElementById('commonSettings');
+        const presetSelect = document.getElementById('presetSelect');
         
         // 渐变颜色元素
         const gradientColors = document.querySelectorAll('.gradient-color');
@@ -804,32 +964,41 @@
                 return trailSettings.color;
             }
             
-            // 使用总生成点计数和渐变长度来计算颜色位置
-            // gradientLength 控制颜色循环的速度，值越大，颜色变化越慢
-            const normalizedPosition = (totalPointsGenerated / trailSettings.gradientLength) % 1;
+            // 实现沿轨迹的单一渐变，从第一个颜色到最后一个颜色
+            // 每个点根据其在轨迹中的位置获得唯一颜色
+            // 使用总生成点计数作为沿渐变的位置
+            const positionInGradient = totalPointsGenerated % trailSettings.gradientLength;
+            const normalizedPosition = positionInGradient / trailSettings.gradientLength;
             
-            // 计算颜色索引
-            const colorIndex = Math.floor(normalizedPosition * (trailSettings.gradientColors.length - 1));
-            const nextColorIndex = Math.min(colorIndex + 1, trailSettings.gradientColors.length - 1);
+            const colorCount = trailSettings.gradientColors.length;
             
-            // 计算区间内的相对位置
-            let intervalPosition = (normalizedPosition * (trailSettings.gradientColors.length - 1)) - colorIndex;
+            // 计算在颜色数组中的位置（非循环）
+            const positionInArray = normalizedPosition * (colorCount - 1);
+            
+            // 获取当前颜色索引和下一个颜色索引
+            const startIndex = Math.floor(positionInArray);
+            const endIndex = Math.min(startIndex + 1, colorCount - 1);
+            
+            // 计算过渡比例
+            let transitionRatio = positionInArray - startIndex;
             
             // 使用 gradientTransition 来调整过渡效果
-            // 0: 硬过渡，1: 平滑过渡
             if (trailSettings.gradientTransition > 0) {
-                // 使用缓动函数调整过渡曲线
-                intervalPosition = easeInOutCubic(intervalPosition, trailSettings.gradientTransition);
+                transitionRatio = easeInOutCubic(transitionRatio, trailSettings.gradientTransition);
             }
             
             // 获取起始颜色和结束颜色
-            const startColor = hexToRgb(trailSettings.gradientColors[colorIndex]);
-            const endColor = hexToRgb(trailSettings.gradientColors[nextColorIndex]);
+            const startColorHex = trailSettings.gradientColors[startIndex];
+            const endColorHex = trailSettings.gradientColors[endIndex];
+            
+            // 获取起始颜色和结束颜色的RGB值
+            const startColor = hexToRgb(startColorHex);
+            const endColor = hexToRgb(endColorHex);
             
             // 线性插值计算当前颜色
-            const r = Math.round(startColor.r + (endColor.r - startColor.r) * intervalPosition);
-            const g = Math.round(startColor.g + (endColor.g - startColor.g) * intervalPosition);
-            const b = Math.round(startColor.b + (endColor.b - startColor.b) * intervalPosition);
+            const r = Math.round(startColor.r + (endColor.r - startColor.r) * transitionRatio);
+            const g = Math.round(startColor.g + (endColor.g - startColor.g) * transitionRatio);
+            const b = Math.round(startColor.b + (endColor.b - startColor.b) * transitionRatio);
             
             // 转换回十六进制格式
             return rgbToHex(r, g, b);
@@ -1088,15 +1257,6 @@
             gradientSettings.style.display = selectedMode === 'gradient' ? 'block' : 'none';
             presetSettings.style.display = selectedMode === 'preset' ? 'block' : 'none';
             
-            // 预设模式下禁用通用设置
-            const controls = commonSettings.querySelectorAll('input, label');
-            controls.forEach(control => {
-                if (control.tagName === 'INPUT') {
-                    control.disabled = selectedMode === 'preset';
-                }
-                control.style.opacity = selectedMode === 'preset' ? '0.6' : '1';
-            });
-            
             // 直接发送当前配置，不需要重新生成，避免使用默认值
             ipcRenderer.send('update-trail-config', trailSettings);
             ipcRenderer.send('toggle-trail', trailSettings.enabled);
@@ -1121,10 +1281,10 @@
             const visibleColors = document.querySelectorAll('.gradient-color-item:not([style*="display: none"])');
             const count = visibleColors.length;
             
-            if (count < 4) {
-                if (count === 2) {
+            if (count < 5) { // 包括添加按钮
+                if (count === 3) { // 2个颜色 + 1个添加按钮
                     gradientColor3.style.display = 'flex';
-                } else if (count === 3) {
+                } else if (count === 4) { // 3个颜色 + 1个添加按钮
                     gradientColor4.style.display = 'flex';
                 }
                 
@@ -1171,10 +1331,21 @@
         // 更新渐变按钮状态
         function updateGradientButtons() {
             const visibleColors = document.querySelectorAll('.gradient-color-item:not([style*="display: none"])');
-            const count = visibleColors.length;
+            // 计算实际颜色数量（减去添加按钮）
+            const colorCount = Array.from(visibleColors).filter(item => 
+                !item.querySelector('#addColorBtn')
+            ).length;
             
-            // 更新添加颜色按钮状态
-            addColorBtn.disabled = count >= 4;
+            // 获取添加按钮的父容器
+            const addColorItem = document.querySelector('.gradient-color-item:has(#addColorBtn)');
+            
+            // 当有4个颜色时隐藏整个添加按钮容器，否则显示
+            if (colorCount >= 4) {
+                addColorItem.style.display = 'none';
+            } else {
+                addColorItem.style.display = 'flex';
+                addColorBtn.style.display = 'flex';
+            }
             
             // 更新每个移除颜色按钮的状态
             // 前两个颜色（必须保留）的移除按钮始终禁用
@@ -1215,6 +1386,52 @@
                 const index = parseInt(e.target.dataset.index);
                 removeGradientColor(index);
             });
+        });
+        
+        // 自定义下拉框逻辑
+        const presetDropdown = document.getElementById('presetDropdown');
+        const dropdownSelected = document.getElementById('dropdownSelected');
+        const dropdownArrow = document.getElementById('dropdownArrow');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const dropdownItems = document.querySelectorAll('.dropdown-item');
+        const selectedPresetText = document.getElementById('selectedPresetText');
+        
+        // 切换下拉菜单显示/隐藏
+        dropdownSelected.addEventListener('click', () => {
+            dropdownMenu.classList.toggle('open');
+            dropdownArrow.classList.toggle('open');
+        });
+        
+        // 点击选项
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const value = item.dataset.value;
+                const text = item.textContent;
+                
+                // 更新选中的值
+                selectedPresetText.textContent = text;
+                presetSelect.value = value;
+                
+                // 更新选中状态
+                dropdownItems.forEach(i => i.classList.remove('selected'));
+                item.classList.add('selected');
+                
+                // 关闭下拉菜单
+                dropdownMenu.classList.remove('open');
+                dropdownArrow.classList.remove('open');
+                
+                // 更新设置
+                trailSettings.preset = parseInt(value);
+                updateSettings();
+            });
+        });
+        
+        // 点击外部关闭下拉菜单
+        document.addEventListener('click', (e) => {
+            if (!presetDropdown.contains(e.target)) {
+                dropdownMenu.classList.remove('open');
+                dropdownArrow.classList.remove('open');
+            }
         });
         
         // 加载保存的配置
@@ -1259,6 +1476,22 @@
                 // 更新按钮状态
                 updateGradientButtons();
             }
+            
+            // 更新预设选择
+            const presetValue = config.preset || 0;
+            presetSelect.value = presetValue;
+            trailSettings.preset = presetValue;
+            
+            // 更新自定义下拉框
+            const dropdownItems = document.querySelectorAll('.dropdown-item');
+            dropdownItems.forEach(item => {
+                if (item.dataset.value === presetValue.toString()) {
+                    item.classList.add('selected');
+                    document.getElementById('selectedPresetText').textContent = item.textContent;
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
             
             // 更新模式
             document.querySelector(`input[name="trailMode"][value="${config.mode}"]`).checked = true;
